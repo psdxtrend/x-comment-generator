@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · Gillette Venus x Santa</title>
+<style>
+  :root { --bg:#f6f1ec; --paper:#fffdfb; --ink:#2a2422; --muted:#7a706a; --line:#e6dbd3; --rose:#8d3b4a; --rose-dark:#722f3c; --gold:#b7a08a; --chip:#f3ebe4; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--ink); }
+  .wrap { max-width:760px; margin:0 auto; padding:32px 18px 56px; }
+  h1 { margin:0 0 8px; font-size:28px; font-weight:600; letter-spacing:-0.03em; }
+  .sub { margin:0; color:var(--muted); line-height:1.5; font-size:15px; }
+  .notice { margin-top:14px; padding:10px 12px; background:var(--chip); border-left:3px solid var(--gold); color:#4e463f; font-size:14px; }
+  .stats { display:flex; justify-content:space-between; gap:12px; margin:22px 0 16px; font-size:15px; }
+  .count { font-weight:600; }
+  .pool { color:var(--muted); }
+  .preview { min-height:190px; background:var(--paper); border:1px solid var(--line); padding:18px; white-space:pre-wrap; line-height:1.55; font-size:15px; }
+  .preview.empty { color:var(--muted); }
+  .actions { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  button { appearance:none; border:0; cursor:pointer; font:inherit; padding:12px 16px; min-height:46px; }
+  .primary { background:var(--rose); color:#fff; flex:1 1 220px; }
+  .primary:hover { background:var(--rose-dark); }
+  .secondary { background:transparent; color:var(--ink); border:1px solid var(--ink); flex:1 1 160px; }
+  .secondary:hover { background:#efe8e1; }
+  .secondary:disabled { opacity:.45; cursor:not-allowed; }
+  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(12px); background:var(--ink); color:#fff; padding:10px 14px; font-size:14px; opacity:0; pointer-events:none; transition:.2s ease; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  @media (max-width:640px) { h1 { font-size:24px; } .stats,.actions { flex-direction:column; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">Tops of Beauty × Gillette Venus · Santa · 6 Oct 2026 · 17:00 · Central Pinklao, G Floor. One comment each click.</p>
+      <div class="notice">Press Space to Generate and Copy. Trend start 16:45. Do not use the keyword or hashtag before then.</div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Post X</button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+<script>
+const tails = {
+  en: ["", " Worth a closer look.", " It stays with you.", " Quietly convincing.", " Easy to remember."],
+  th: ["", " ดูแล้วอยากดูซ้ำ.", " จำได้ง่าย.", " ไม่จัดเกินไป.", " น่าติดตามจริง."],
+  ko: ["", " 다시 보게 된다.", " 잔잔하게 남는다.", " 설득력이 있다.", " 과하지 않아서 좋다."],
+  ja: ["", " もう一度見たくなる.", " 静かに残る.", " 説得力がある.", " やりすぎていない."],
+  zh: ["", " 会想再看一次.", " 记得住.", " 不夸张.", " 很有说服力."]
+};
+
+const cores = {
+  en: {
+    star: ["Santa brings a calm charm that makes this Venus moment feel considered","Santa looks at ease here, and that ease carries the whole frame","There is an honest warmth in the way Santa shows up","Santa makes the campaign feel personal instead of staged","The quiet presence of Santa is what holds this together","Santa gives the scene a face people can actually trust","Watching Santa in this light feels like the right match","Santa does not force the mood, and that is the appeal","A soft confidence from Santa keeps the story grounded","Santa turns a polished setup into something closer"],
+    collab: ["Santa and Gillette Venus feel paired with intention","This link between Santa and Gillette Venus reads as charm meeting care","Gillette Venus choosing Santa makes the collaboration feel precise","Santa with Gillette Venus has a clean, unforced rhythm","The collaboration lets both Santa and Gillette Venus stay visible","Santa and Gillette Venus share one temperature on screen","It is rare to see a smooth-skin story and Santa align this neatly","Gillette Venus and Santa build the frame instead of competing in it","The pairing of Santa and Gillette Venus feels measured","Santa beside Gillette Venus gives the campaign a clear center"],
+    product: ["The Venus finish looks refined, and the result is easy to believe","Soft skin, a close shave, and a texture that feels wearable","Gillette Venus shows the result without shouting","The smoothness here reads as a product result, not a filter","Clean lines and a calm tone make Venus convincing","What Gillette Venus presents looks careful and well made","The finish is polished while still looking like real skin","These razors earn the attention through restraint","A quiet care sits in the way Venus is shown","The skin story and the Venus story match"],
+    vibe: ["Central Pinklao gives this Tops of Beauty drop air and light","This vibe is warm, polished, and still precise","Everything about this afternoon feels unhurried in the best way","The mood stays soft without turning cold","Pinklao plus this Venus story has a specific atmosphere","Light, place, and pace all pull in the same direction","The campaign breathes, which makes the details land","A soft retail frame keeps the brand feeling elevated","The visual rhythm is slow enough to remember","Tops of Beauty gives Gillette Venus a setting with real character"],
+    future: ["Hoping this is only the first chapter for Santa and Gillette Venus","Would like to see Santa and Gillette Venus build on this","If there is a next round, the interest is already there","This collaboration has room to grow","Another city and the same pairing would be welcome","Pinklao should not be the last time these names meet","There is enough here for another carefully made chapter","The next Santa and Gillette Venus project can keep this tone","Saving attention for whatever follows this campaign","A continuation would feel earned, not repetitive"]
+  },
+  th: {
+    star: ["ซานต้าทำให้ภาพนี้ดูเป็นธรรมชาติ","ท่าทางของซานต้าทำให้แคมเปญไม่แข็ง","ซานต้าอยู่ตรงนี้แล้วบรรยากาศเปลี่ยน","ความสงบของซานต้าเข้ากับโทนนี้","ซานต้าไม่ต้องทำมาก ภาพก็เล่าเรื่องได้","ใบหน้าของซานต้าให้แคมเปญมีจุดยึด","ความไว้ใจได้ของซานต้าอ่านออกจากภาพ","ซานต้าทำให้เรื่องนี้ใกล้ตัวขึ้น","ความมั่นใจแบบเบา ๆ ของซานต้าดูดี","ซานต้าวางน้ำหนักของทั้งชุดได้พอดี"],
+    collab: ["ซานต้ากับ Gillette Venus เข้ากันโดยไม่ฝืน","การจับคู่ครั้งนี้ดูตั้งใจและเนี้ยบ","Gillette Venus เลือกซานต้าได้ถูกจังหวะ","ความร่วมมือรอบนี้มีทั้งความละมุนและความชัด","ซานต้าและ Venus เล่าเรื่องผิวเดียวกันได้","ทั้งสองฝ่ายไม่แย่งซีน","ความตั้งใจของการจับคู่อ่านออก","ซานต้ากับ Gillette Venus มีจังหวะเดียวกัน","งานนี้ดูมีการคิด ไม่ใช่แค่ประกบชื่อ","จุดศูนย์กลางของแคมเปญชัดขึ้นเพราะคู่นี้"],
+    product: ["Venus ดูเรียบ แต่ผลบนผิวอ่านออก","โทนผิวเรียบทำให้เชื่อในผลิตภัณฑ์มากขึ้น","Gillette Venus โชว์ผลลัพธ์แบบไม่ตะโกน","ความเนียนที่เห็นไม่เหมือนฟิลเตอร์","ภาพรวมไม่จัดเกิน แต่ยังชัด","ผลลัพธ์ยังดูเป็นผิวจริง","วิธีนำเสนอเรียบและมั่น","ความละมุนพอดี ไม่หนา","ผลิตภัณฑ์ได้ความสนใจจากความระมัดระวัง","เรื่องผิวและเรื่อง Venus ไปด้วยกัน"],
+    vibe: ["เซ็นทรัลปิ่นเกล้าให้งานนี้มีอากาศและแสง","โทน Tops of Beauty อุ่น แต่ยังเนี้ยบ","บรรยากาศบ่ายนี้ไม่รีบ และนั้นทำให้ดูดี","แสงในงานยังนุ่ม ไม่เย็น","สถานที่กับเรื่อง Venus ไปทางเดียวกัน","จังหวะภาพช้าพอให้จำรายละเอียด","งานนี้หายใจได้ จึงไม่แน่น","ปิ่นเกล้าทำให้แบรนด์มีที่วาง","ความเงียบของเฟรมช่วยให้รายละเอียดชัด","Tops of Beauty รอบนี้มีคาแรกเตอร์ของตัวเอง"],
+    future: ["อยากเห็นซานต้ากับ Gillette Venus ต่ออีกบท","ถ้ามีรอบหน้า ความสนใจยังอยู่","ความร่วมมือรอบนี้ยังมีที่ให้โต","ปิ่นเกล้าไม่ควรเป็นครั้งสุดท้ายของคู่นี้","โทนนี้ควรเก็บไว้ใช้ต่อ","บทต่อไปทำแบบนี้ได้อีก","ยังมีรายละเอียดพอให้เล่าต่อ","การได้เห็นซานต้ากับ Venus อีกครั้งจะไม่ซ้ำ","เก็บความสนใจไว้กับสิ่งที่ตามมา","งานนี้เปิดทางได้โดยไม่ต้องเร่ง"]
+  },
+  ko: {
+    star: ["산타의 차분한 매력이 이 장면을 자연스럽게 만든다","산타가 편해 보여서 프레임 전체가 안정된다","산타가 등장하는 방식에 솔직한 온기가 있다","산타 덕분에 캠페인이 연출보다 사람에 가깝다","산타의 조용한 존재가 이 장면을 붙잡는다","산타가 믿을 수 있는 얼굴을 준다","이 조명 속의 산타는 잘 맞는다","산타는 분위기를 강요하지 않는다","산타의 부드러운 자신감이 이야기를 붙든다","산타가 정돈된 세팅을 더 가깝게 만든다"],
+    collab: ["산타와 질레트 비너스는 의도적으로 잘 맞는다","산타와 비너스의 연결이 매력과 케어로 읽힌다","비너스가 산타를 고른 선택이 정확해 보인다","산타와 비너스는 억지 없는 리듬을 갖는다","협업이 둘 다 보이게 둔다","산타와 비너스는 같은 온도를 공유한다","부드러운 피부 이야기와 산타가 neat하게 맞는다","둘은 경쟁하지 않고 프레임을 만든다","이 페어링은 절제돼 있다","산타가 비너스 옆에 서면 중심이 분명해진다"],
+    product: ["비너스 마무리가 정제돼 보이고 결과가 믿긴다","부드러운 피부와 가까운 면도, 쓸 수 있는 텍스처","질레트 비너스는 결과를 소리 없이 보여 준다","이 매끄러움은 필터가 아니라 제품 결과로 읽힌다","깨끗한 선과 차분한 톤이 설득력 있다","비너스가 보여주는 것은 신중하고 잘 만들어졌다","마무리는 단정하면서도 실제 피부처럼 보인다","이 면도기는 절제로 시선을 얻는다","비너스를 보여주는 방식에 조용한 케어가 있다","피부 이야기와 비너스 이야기가 맞다"],
+    vibe: ["센트럴 핑클라오가 이 드롭에 공기와 빛을 준다","이 분위기는 따뜻하고 단정하며 정확하다","오후 분위기가 서두르지 않아 좋다","무드가 부드럽지만 차갑지 않다","핑클라오와 비너스 이야기에 고유한 공기가 있다","빛과 장소와 속도가 같은 방향이다","캠페인이 숨 쉬어서 디테일이 남는다","부드러운 매장 프레임이 브랜드를 높인다","시각 리듬이 기억할 만큼 느리다","탑스 오브 뷰티가 비너스에 성격 있는 장소를 준다"],
+    future: ["산타와 질레트 비너스의 첫 장이길 바란다","이 위를 이어서 보고 싶다","다음 라운드가 있다면 관심은 이미 있다","이 협업은 자랄 자리가 있다","다른 도시에서도 같은 페어링이면 좋겠다","핑클라오가 마지막이 아니길 바란다","또 한 장을 만들 재료가 충분하다","다음 프로젝트도 이 톤을 지키면 된다","이 캠페인 다음을 기다려 본다","속편은 반복이 아니라 earned로 느껴질 것이다"]
+  },
+  ja: {
+    star: ["サンタの落ち着いた魅力が、この場面を丁寧に見せる","サンタが自然体で、その余裕が画面を支えている","サンタの出方に正直な温かさがある","サンタがいると、キャンペーンが演出より人に寄る","サンタの静かな存在が全体をまとめている","サンタが信頼できる顔を与えている","この光の中のサンタはよく合う","サンタは空気を押し付けない","サンタの柔らかい自信が話を地に着ける","サンタが整ったセットを近くしてくれる"],
+    collab: ["サンタとジレットヴィーナスは意図を持って並んでいる","サンタとヴィーナスのつながりは魅力とケアに読める","ヴィーナスがサンタを選んだ判断は精確に見える","サンタとヴィーナスには無理のないリズムがある","コラボは両方を見えるままにしている","サンタとヴィーナスは同じ温度を共有している","滑らかな肌の話とサンタがきれいに揃う","二者は競わず、フレームを作っている","この組み合わせは測られている","サンタがヴィーナスの隣にいると中心が明確になる"],
+    product: ["ヴィーナスの仕上がりは洗練されていて、結果が信じやすい","柔らかい肌、近い剃り味、使える質感","ジレットヴィーナスは結果を叫ばずに見せる","この滑らかさはフィルターではなく製品の結果に読める","清潔な線と静かなトーンが説得力を持つ","ヴィーナスの見せ方は丁寧でよく出来ている","仕上がりは磨かれているのに実在の肌に見える","このカミソリは抑制で注目を得る","ヴィーナスの見せ方に静かなケアがある","肌の話とヴィーナスの話が一致している"],
+    vibe: ["セントラルピンクラオがこのドロップに空気と光を与える","この空気は温かく、整っていて、まだ精確だ","午後の気分が急がないのが良い","ムードは柔らかいが冷たくならない","ピンクラオとヴィーナスの話には固有の空気がある","光と場所と速度が同じ方向を向いている","キャンペーンが呼吸しているから細部が残る","柔らかい売場のフレームがブランドを上げる","視覚のリズムは覚えられる速さだ","トップス オブ ビューティーがヴィーナスに性格のある場所を与える"],
+    future: ["サンタとジレットヴィーナスの最初の章であってほしい","この先も見てみたい","次の回があるなら関心はもうある","このコラボには伸びる余地がある","別の街でも同じ組み合わせなら歓迎だ","ピンクラオが最後であるべきではない","もう一章を丁寧に作る材料がある","次のプロジェクトもこのトーンを保てる","このキャンペーンの続きに注意を残しておく","続編は繰り返しではなく、 earned に感じるだろう"]
+  },
+  zh: {
+    star: ["Santa 的安静魅力让这一刻显得被考虑过","Santa 在这里很放松，那种从容撑起了整帧","Santa 出现的方式里有诚实的温度","Santa 让campaign更像人，而不是摆拍","Santa 安静的存在把画面稳住了","Santa 给了这个场景一张可信的脸","这样的光线里看 Santa 很合适","Santa 不强迫气氛，这正是吸引力","Santa 柔和的自信让故事落地","Santa 把精致的布置变成更近的东西"],
+    collab: ["Santa 和 Gillette Venus 的搭配是有意图的","Santa 与 Venus 的连接读起来像魅力遇上护理","Gillette Venus 选择 Santa 让合作显得精准","Santa 和 Venus 有一种不勉强的节奏","这次合作让两边都看得见","Santa 和 Gillette Venus 共享同一种温度","光滑肌肤的故事和 Santa 对齐得很干净","两边在建画面，而不是抢画面","Santa 与 Venus 的配对显得有分寸","Santa 站在 Venus 旁边，中心就清楚了"],
+    product: ["Venus 的完成度看起来精致，结果也容易相信","柔软的皮肤、贴近的剃须，质地像能日常用","Gillette Venus 展示结果时并不喧哗","这里的光滑读起来是产品效果，不是滤镜","干净的线条和安静的调性让 Venus 有说服力","Gillette Venus 呈现的东西显得谨慎而做好了","完成度精致，但仍然像真实皮肤","这些剃须刀靠克制赢得注意","Venus 的展示方式里有一种安静的护理","皮肤的故事和 Venus 的故事是匹配的"],
+    vibe: ["Central Pinklao 给这次 Tops of Beauty 空气和光","这气氛温暖、讲究，而且仍然精确","这个下午不匆忙，这是最好的地方","情绪保持柔软，但没有变冷","Pinklao 加上 Venus 的故事有一种特定气氛","光、地点和节奏都往同一个方向","campaign 能呼吸，细节才会落下","柔软的零售画面让品牌显得被抬高","视觉节奏慢到足以记住","Tops of Beauty 给了 Gillette Venus 一个有性格的场地"],
+    future: ["希望这只是 Santa 和 Gillette Venus 的第一章","想看到 Santa 和 Venus 在这之上继续","如果有下一轮，兴趣已经在了","这次合作还有生长的空间","另一座城市、同样的搭配也会受欢迎","Pinklao 不该是这两个名字最后一次见面","这里足够再做一章仔细的内容","下一个 Santa 和 Venus 项目可以保持这个调","把注意力留给这次campaign之后的东西","续集会显得earned，而不是重复"]
+  }
+};
+
+const langs = Object.keys(cores);
+const themes = ["star", "collab", "product", "vibe", "future"];
+const pool = [];
+langs.forEach(lang => {
+  themes.forEach(theme => {
+    cores[lang][theme].forEach(line => {
+      tails[lang].forEach(tail => pool.push(line + tail));
+    });
+  });
+});
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+}
+
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+shuffle(order);
+
+const preview = document.getElementById("preview");
+const generateBtn = document.getElementById("generate");
+const postBtn = document.getElementById("post");
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const toast = document.getElementById("toast");
+poolEl.textContent = pool.length + " comments in pool";
+
+function build(body) {
+  return body + "\nSANTA WITH VENUS AT TOPS\n\n#GilletteVenusxSanta\n#Santapp";
+}
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+async function generate() {
+  if (cursor >= order.length) {
+    shuffle(order);
+    cursor = 0;
+  }
+  current = build(pool[order[cursor++]]);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+
+generateBtn.addEventListener("click", generate);
+postBtn.addEventListener("click", () => {
+  if (!current) return;
+  window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", event => {
+  if (event.code === "Space" && event.target === document.body) {
+    event.preventDefault();
+    generate();
+  }
+});
+</script>
+</body>
+</html>
