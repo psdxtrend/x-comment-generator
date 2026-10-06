@@ -109,30 +109,62 @@
   </div>
   <div class="toast" id="toast"></div>
 <script>
-const comments = [
-  "Perth does not push the booth, and that is what makes this Go Hair stop at Tops feel considered. The Pinklao light stays soft, the finish reads like real hair, and the brand never has to shout to stay in the frame. Curious if the next city keeps this same quiet pace.",
-  "What stands out is how easily Perth sits beside Go Hair. It does not feel like a face dropped onto a product, more like the evening was built around that calm. Healthy weight, light shine, nothing forced. Would you rather they stay in this retail mood, or take the collab outside?",
-  "Central Pinklao gives the whole thing air. Perth looks at ease, the hair story stays refined, and Go Hair gets a setting with actual character instead of a plain studio. That combination is harder to fake than a glossy close-up. The restraint is doing a lot of the work here.",
-  "I keep coming back to the finish. Go Hair shows the result without over-polishing it, and Perth makes that result feel personal instead of staged. Soft shine, clean texture, a formula that looks wearable. That is usually what makes people trust a hair drop more than a hard sell.",
-  "Perth and Go Hair share one temperature on screen. Neither one races ahead, which is rare for a booth collab. Tops of Beauty holds the mood together, and the product still reads as the point. Feels like the start of a longer story, not a one-off stop.",
-  "There is a clean warmth in how Perth shows up here. No forced smile, no loud styling, just enough presence to give Go Hair a face people can actually place. The shine reads as care, not a filter. That difference matters more than people admit.",
-  "The pairing feels measured. Go Hair with Perth makes the evening precise, and Pinklao stops it from looking cold. Clean texture, calm pace, a G floor setting you remember. If they build on this, I hope they keep the unhurried part instead of turning the next stop into a spectacle.",
-  "Watching this, the hair story and the Perth story do not compete. They build the same frame. Go Hair earns the look through a gentle formula, and the booth light does the rest. Quiet care is an easy phrase, but this one actually looks like it.",
-  "A quiet confidence from Perth keeps the whole thing grounded. Go Hair could have gone brighter and louder, and instead the finish stays close to real hair. That choice is what makes the collab feel closer. Are you reading this more as a hair drop or as an evening story?",
-  "Tops of Beauty plus this booth has a specific atmosphere. Light, place, and pace all pull the same way, so the details land instead of getting lost. Perth turns the setup into something less distant. Worth staying with, especially if the next city keeps this tone.",
-  "It is rare to see a hair brand and a face align this neatly. Perth does not force the mood, Go Hair does not over-explain the product, and the result still looks believable. The booth breathes. That is usually what makes a comment section stay open longer than a quick like.",
-  "The quiet presence is the hook. Perth gives the scene someone to trust, and Go Hair uses that trust instead of covering it with effects. Soft finish, light shine, a texture that feels wearable. Hoping Pinklao is not the last time these names meet.",
-  "This reads as style meeting care more than a standard endorsement. Perth beside Go Hair gives the frame a center, and the night mood stays warm without turning loud. I would actually watch a longer cut of this. The stills already feel like they have a second chapter in them.",
-  "What Go Hair presents looks careful. The finish is refined, the hair story matches, and Perth keeps it from feeling like a catalog. Pinklao adds air so the care does not get heavy. That balance is the part people will remember after the hashtags scroll past.",
-  "If there is a next round, the interest is already there. Perth and Go Hair have room to grow without repeating the same shot. Another city, same temperature, would land. The current stop already feels earned, which is the harder part.",
-  "The visual rhythm is slow enough to notice the product. Clean texture, calm tone, no shouting. Perth looks at ease and that ease carries the frame, while Go Hair stays visible instead of hiding behind the face. A continuation in this register would not feel repetitive.",
-  "Warm, unhurried, still precise. That is the vibe, and it suits both Perth and Go Hair better than a hard studio light would. The shine reads as care. Do you think the location is doing as much work as the casting here?",
-  "Perth makes the evening feel personal. Go Hair makes the result easy to believe. Together they avoid the usual staged booth look, and Tops keeps the light honest. Small choices, but they add up to something people actually stop on.",
-  "The collaboration lets both sides stay visible. Perth is not just decoration, and Go Hair is not just a logo in the corner. The finish is polished while still looking like real hair. That is the line most drops miss, and this one stays on the right side of it.",
-  "Saving attention for whatever follows this booth. The first chapter already has a clear center: Perth, Go Hair, and a Pinklao frame that does not rush. If they keep the tone and change the city, it should still feel like the same story. Curious what detail you noticed first."
+const openings = [
+  "Perth looks at ease beside Go Hair at Tops, and that ease is what holds the evening together.",
+  "This Perth and Go Hair stop does not feel staged. The booth stays soft, and the face stays close.",
+  "Go Hair with Perth has a clean rhythm. Neither side has to push to stay visible.",
+  "Central Pinklao gives this Tops of Beauty slot air, and Perth uses that air instead of filling it.",
+  "The pairing reads as style meeting care. Perth keeps the frame personal, Go Hair keeps the result clear.",
+  "Watching Perth in this light, the hair story lands before the branding does.",
+  "A quiet confidence from Perth turns the Go Hair setup into something less like a demo.",
+  "The night at Tops feels unhurried, which is rare for a booth drop and suits Perth.",
+  "Go Hair chose a face that does not compete with the finish, and that choice shows.",
+  "Perth beside Go Hair gives the G floor a center without making the product disappear.",
+  "There is a clean warmth in how Perth shows up here. No loud pose, no forced shine.",
+  "This collab lets both names stay in the same temperature. That is harder than it looks.",
+  "The booth breathes, so the hair detail can actually be read instead of guessed.",
+  "Perth makes Pinklao feel closer. Go Hair makes the reason for stopping obvious.",
+  "Soft retail light, a calm face, and a finish that does not shout. That is the whole frame.",
+  "Go Hair looks careful here, and Perth is the reason the care does not feel cold.",
+  "The evening slot at Tops of Beauty has a specific pace, and Perth matches it.",
+  "What holds this is not a slogan. It is Perth standing still long enough for the hair to register.",
+  "Pinklao plus this Go Hair story has a real setting, not a blank backdrop.",
+  "Perth does not force the mood, and that restraint is the appeal of the stop.",
+  "The collab feels measured. Face and formula share the shot instead of trading it.",
+  "A hair drop usually rushes. This one with Perth slows down just enough to notice.",
+  "Tops of Beauty looks clearer once Perth and Go Hair are in the same frame.",
+  "The first thing that lands is the calm, then the shine, then the fact that both feel intentional.",
+  "Perth keeps this evening frame soft. Go Hair keeps it precise. The mix works."
 ];
-
-let order = comments.map((_, i) => i);
+const middles = [
+  "The finish looks like healthy weight and a light shine, closer to care than to a filter.",
+  "Clean texture is doing the convincing. The product does not need a louder claim.",
+  "Go Hair shows the result without covering Perth, which is why the still feels honest.",
+  "The shine reads as a formula, not a grade. That is the line most booth shots miss.",
+  "Nothing about the hair looks thick with product, and that restraint matches the face.",
+  "You can see the booth, the light, and the finish in one glance, and none of them fight.",
+  "It stays polished while still looking like real hair, which is the harder version of this ad.",
+  "The G floor setting gives the drop a room, so the detail has somewhere to land.",
+  "Pace matters here. Slow enough to remember the texture, not so slow that it turns stiff.",
+  "Both sides stay visible. Perth is not decoration, and Go Hair is not a logo in the corner."
+];
+const closers = [
+  "Curious if the next city keeps this same quiet pace, or if they let the booth get louder.",
+  "Would you rather they stay in this Tops light, or take the pairing somewhere less retail?",
+  "If there is a second chapter, the interest is already in the tone, not in a bigger setup.",
+  "Do you think the location is doing as much work as the casting here?",
+  "Hoping Pinklao is not the last time these names share a frame this calm.",
+  "A continuation would feel earned if they keep the finish this close to real hair.",
+  "What did you notice first, the face or the shine?",
+  "That balance is usually what keeps a comment section open longer than a quick like."
+];
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+let order = pool.map((_, i) => i);
 let cursor = 0;
 let copied = 0;
 let current = "";
@@ -141,8 +173,7 @@ const poolEl = document.getElementById("pool");
 const preview = document.getElementById("preview");
 const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
-poolEl.textContent = "Pool: " + comments.length + " comments";
-
+poolEl.textContent = "Pool: " + pool.length + " comments";
 function shuffle(list) {
   for (let i = list.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -152,24 +183,21 @@ function shuffle(list) {
   }
 }
 shuffle(order);
-
 function showToast(text) {
   toast.textContent = text;
   toast.classList.add("show");
   clearTimeout(showToast._t);
   showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
 }
-
 function build(body) {
   return body + "\n\nPERTH X TOPS OF GOHAIR\n\n#GOHAIRxPerth\n#PerthTanapon";
 }
-
 async function generate() {
   if (cursor >= order.length) {
     shuffle(order);
     cursor = 0;
   }
-  current = build(comments[order[cursor++]]);
+  current = build(pool[order[cursor++]]);
   preview.textContent = current;
   preview.classList.remove("empty");
   postBtn.disabled = false;
@@ -182,7 +210,6 @@ async function generate() {
     showToast("Copy failed. Select the text manually.");
   }
 }
-
 document.getElementById("generate").addEventListener("click", generate);
 postBtn.addEventListener("click", () => {
   if (!current) return;
