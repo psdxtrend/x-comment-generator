@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>X Comment Generator</title>
+<title>X Comment Generator · GO HAIR x Perth</title>
 <style>
   :root {
-    --bg: #f4f7f4;
-    --paper: #fffcfa;
-    --ink: #243028;
-    --muted: #6d7a72;
-    --line: #d7e2da;
-    --green: #2f6b4f;
-    --green-dark: #24553e;
+    --bg: #f3f6f1;
+    --paper: #fffdfb;
+    --ink: #1f2922;
+    --muted: #6d776f;
+    --line: #dbe4dc;
+    --green: #2f6b45;
+    --green-dark: #245538;
     --gold: #b7a08a;
-    --chip: #e7eee8;
+    --chip: #eaf1eb;
   }
   * { box-sizing: border-box; }
   body {
@@ -32,7 +32,7 @@
     padding: 10px 12px;
     background: var(--chip);
     border-left: 3px solid var(--gold);
-    color: #3e4a42;
+    color: #3e4a41;
     font-size: 14px;
   }
   .stats {
@@ -94,7 +94,7 @@
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
-      <p class="sub">English only. Longer comments, written to invite a reply.</p>
+      <p class="sub">English only. Short comments.</p>
       <div class="notice">Press Space to Generate and Copy. Trend start 19:15. Do not use the keyword or hashtag before then.</div>
     </header>
     <div class="stats">
@@ -104,59 +104,59 @@
     <div class="preview empty" id="preview">Your comment will appear here.</div>
     <div class="actions">
       <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
-      <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="secondary" id="post" type="button" disabled>Space</button>
     </div>
   </div>
   <div class="toast" id="toast"></div>
 <script>
 const openings = [
-  "Perth looks at ease beside Go Hair at Tops, and that ease is what holds the evening together.",
-  "This Perth and Go Hair stop does not feel staged. The booth stays soft, and the face stays close.",
-  "Go Hair with Perth has a clean rhythm. Neither side has to push to stay visible.",
-  "Central Pinklao gives this Tops of Beauty slot air, and Perth uses that air instead of filling it.",
-  "The pairing reads as style meeting care. Perth keeps the frame personal, Go Hair keeps the result clear.",
-  "Watching Perth in this light, the hair story lands before the branding does.",
-  "A quiet confidence from Perth turns the Go Hair setup into something less like a demo.",
-  "The night at Tops feels unhurried, which is rare for a booth drop and suits Perth.",
-  "Go Hair chose a face that does not compete with the finish, and that choice shows.",
-  "Perth beside Go Hair gives the G floor a center without making the product disappear.",
-  "There is a clean warmth in how Perth shows up here. No loud pose, no forced shine.",
-  "This collab lets both names stay in the same temperature. That is harder than it looks.",
-  "The booth breathes, so the hair detail can actually be read instead of guessed.",
-  "Perth makes Pinklao feel closer. Go Hair makes the reason for stopping obvious.",
-  "Soft retail light, a calm face, and a finish that does not shout. That is the whole frame.",
-  "Go Hair looks careful here, and Perth is the reason the care does not feel cold.",
-  "The evening slot at Tops of Beauty has a specific pace, and Perth matches it.",
-  "What holds this is not a slogan. It is Perth standing still long enough for the hair to register.",
-  "Pinklao plus this Go Hair story has a real setting, not a blank backdrop.",
-  "Perth does not force the mood, and that restraint is the appeal of the stop.",
-  "The collab feels measured. Face and formula share the shot instead of trading it.",
-  "A hair drop usually rushes. This one with Perth slows down just enough to notice.",
-  "Tops of Beauty looks clearer once Perth and Go Hair are in the same frame.",
-  "The first thing that lands is the calm, then the shine, then the fact that both feel intentional.",
-  "Perth keeps this evening frame soft. Go Hair keeps it precise. The mix works."
+  "Perth looks at ease beside Go Hair at Tops.",
+  "This Perth and Go Hair stop feels soft, not staged.",
+  "Go Hair with Perth has a clean rhythm.",
+  "Pinklao gives the booth air and Perth uses it well.",
+  "The pairing feels like style meeting real care.",
+  "Perth keeps the frame personal and easy.",
+  "Soft confidence from Perth holds the evening.",
+  "The Tops evening feels unhurried and suits Perth.",
+  "Go Hair chose a face that does not compete with the result.",
+  "Perth beside Go Hair gives the stop a quiet center.",
+  "Clean warmth from Perth, no forced shine.",
+  "Both names stay in the same temperature.",
+  "The booth breathes so the hair detail can be read.",
+  "Perth makes Pinklao feel closer.",
+  "Soft light, calm face, result that does not shout.",
+  "Go Hair looks careful and Perth keeps it warm.",
+  "The pace at Tops matches Perth well.",
+  "Perth stands still long enough for the finish to land.",
+  "Pinklao plus Go Hair has a real setting.",
+  "Perth does not force the mood. That is the appeal.",
+  "Face and formula share the shot cleanly.",
+  "This drop slows just enough to notice.",
+  "Tops of Beauty looks clearer with them together.",
+  "First the calm, then the shine.",
+  "Perth keeps it soft. Go Hair keeps it precise."
 ];
 const middles = [
-  "The finish looks like healthy weight and a light shine, closer to care than to a filter.",
-  "Clean texture is doing the convincing. The product does not need a louder claim.",
-  "Go Hair shows the result without covering Perth, which is why the still feels honest.",
-  "The shine reads as a formula, not a grade. That is the line most booth shots miss.",
-  "Nothing about the hair looks thick with product, and that restraint matches the face.",
-  "You can see the booth, the light, and the finish in one glance, and none of them fight.",
-  "It stays polished while still looking like real hair, which is the harder version of this ad.",
-  "The G floor setting gives the drop a room, so the detail has somewhere to land.",
-  "Pace matters here. Slow enough to remember the texture, not so slow that it turns stiff.",
-  "Both sides stay visible. Perth is not decoration, and Go Hair is not a logo in the corner."
+  "The finish looks soft and easy to believe.",
+  "A clean result does the convincing.",
+  "Go Hair shows the outcome without covering Perth.",
+  "The shine reads as real care.",
+  "Nothing looks overworked.",
+  "Booth, light and result sit in one glance.",
+  "Polished yet still like real hair.",
+  "Pinklao gives the detail room to land.",
+  "Pace is slow enough to remember.",
+  "Both sides stay visible."
 ];
 const closers = [
-  "Curious if the next city keeps this same quiet pace, or if they let the booth get louder.",
-  "Would you rather they stay in this Tops light, or take the pairing somewhere less retail?",
-  "If there is a second chapter, the interest is already in the tone, not in a bigger setup.",
-  "Do you think the location is doing as much work as the casting here?",
-  "Hoping Pinklao is not the last time these names share a frame this calm.",
-  "A continuation would feel earned if they keep the finish this close to real hair.",
-  "What did you notice first, the face or the shine?",
-  "That balance is usually what keeps a comment section open longer than a quick like."
+  "Hoping the next stop keeps this quiet pace.",
+  "Interest is already in the tone.",
+  "Pinklao should not be the last calm frame.",
+  "A continuation would feel earned.",
+  "The balance holds the attention.",
+  "This tone is worth keeping.",
+  "Saving attention for what follows.",
+  "The restraint is what lands."
 ];
 const pool = [];
 openings.forEach(o => {
@@ -211,9 +211,10 @@ async function generate() {
   }
 }
 document.getElementById("generate").addEventListener("click", generate);
-postBtn.addEventListener("click", () => {
+postBtn.addEventListener("click", async () => {
+  await generate();
   if (!current) return;
-  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+  window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
 });
 document.addEventListener("keydown", (event) => {
   if (event.code !== "Space") return;
