@@ -94,7 +94,7 @@
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
-      <p class="sub">English only. Longer comments, written to invite a reply.</p>
+      <p class="sub">English only. Short comments.</p>
       <div class="notice">Press Space to Generate and Copy. Trend start 16:45. Do not use the keyword or hashtag before then.</div>
     </header>
     <div class="stats">
@@ -104,59 +104,59 @@
     <div class="preview empty" id="preview">Your comment will appear here.</div>
     <div class="actions">
       <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
-      <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="secondary" id="post" type="button" disabled>Space</button>
     </div>
   </div>
   <div class="toast" id="toast"></div>
 <script>
 const openings = [
-  "Santa looks calm beside Gillette Venus at Tops, and that calm is what holds the afternoon together.",
-  "This Santa and Venus stop does not feel staged. The booth stays soft, and the face stays close.",
-  "Gillette Venus with Santa has a clean rhythm. Neither side has to push to stay visible.",
-  "Central Pinklao gives this Tops of Beauty slot air, and Santa uses that air instead of filling it.",
-  "The pairing reads as care meeting a clear finish. Santa keeps the frame personal, Venus keeps the result sharp.",
-  "Watching Santa in this light, the product story lands before the branding does.",
-  "A soft confidence from Santa turns the Venus setup into something less like a demo.",
-  "The afternoon at Tops feels unhurried, which is rare for a booth drop and suits Santa.",
-  "Gillette Venus chose a face that does not compete with the finish, and that choice shows.",
-  "Santa beside Venus gives the stop a center without making the product disappear.",
-  "There is a clean warmth in how Santa shows up here. No loud pose, no forced gloss.",
-  "This collab lets both names stay in the same temperature. That is harder than it looks.",
-  "The booth breathes, so the finish can actually be read instead of guessed.",
-  "Santa makes Pinklao feel closer. Gillette Venus makes the reason for stopping obvious.",
-  "Soft retail light, a calm face, and a result that does not shout. That is the whole frame.",
-  "Venus looks careful here, and Santa is the reason the care does not feel cold.",
-  "The afternoon slot at Tops of Beauty has a specific pace, and Santa matches it.",
-  "What holds this is not a slogan. It is Santa standing still long enough for the finish to register.",
-  "Pinklao plus this Venus story has a real setting, not a blank backdrop.",
-  "Santa does not force the mood, and that restraint is the appeal of the stop.",
-  "The collab feels measured. Face and formula share the shot instead of trading it.",
-  "A grooming drop usually rushes. This one with Santa slows down just enough to notice.",
-  "Tops of Beauty looks clearer once Santa and Gillette Venus are in the same frame.",
-  "The first thing that lands is the calm, then the smoothness, then the fact that both feel intentional.",
-  "Santa keeps this afternoon frame soft. Venus keeps it precise. The mix works."
+  "Santa looks calm beside Gillette Venus at Tops.",
+  "This Santa and Venus stop feels soft, not staged.",
+  "Gillette Venus with Santa has a clean rhythm.",
+  "Pinklao gives the booth air and Santa uses it well.",
+  "The pairing feels like care meeting a clear finish.",
+  "Santa keeps the frame personal and easy.",
+  "Soft confidence from Santa holds the afternoon.",
+  "The Tops slot feels unhurried and suits Santa.",
+  "Venus chose a face that does not compete with the result.",
+  "Santa beside Venus gives the stop a quiet center.",
+  "Clean warmth from Santa, no forced gloss.",
+  "Both names stay in the same temperature.",
+  "The booth breathes so the finish can be read.",
+  "Santa makes Pinklao feel closer.",
+  "Soft light, calm face, result that does not shout.",
+  "Venus looks careful and Santa keeps it warm.",
+  "The pace at Tops matches Santa well.",
+  "Santa stands still long enough for the finish to land.",
+  "Pinklao plus Venus has a real setting.",
+  "Santa does not force the mood. That is the appeal.",
+  "Face and formula share the shot cleanly.",
+  "This drop slows just enough to notice.",
+  "Tops of Beauty looks clearer with them together.",
+  "First the calm, then the smoothness.",
+  "Santa keeps it soft. Venus keeps it precise."
 ];
 const middles = [
-  "The finish looks smooth and easy to believe, closer to care than to a filter.",
-  "A clean result is doing the convincing. The product does not need a louder claim.",
-  "Gillette Venus shows the outcome without covering Santa, which is why the still feels honest.",
-  "The smoothness reads as a real finish, not a grade. That is the line most booth shots miss.",
-  "Nothing about the moment looks overworked, and that restraint matches the face.",
-  "You can see the booth, the light, and the result in one glance, and none of them fight.",
-  "It stays polished while still looking close to skin, which is the harder version of this ad.",
-  "The Pinklao setting gives the drop a room, so the detail has somewhere to land.",
-  "Pace matters here. Slow enough to remember the finish, not so slow that it turns stiff.",
-  "Both sides stay visible. Santa is not decoration, and Venus is not a logo in the corner."
+  "The finish looks smooth and easy to believe.",
+  "A clean result does the convincing.",
+  "Venus shows the outcome without covering Santa.",
+  "The smoothness reads as a real finish.",
+  "Nothing looks overworked.",
+  "Booth, light and result sit in one glance.",
+  "Polished yet still close to real skin.",
+  "Pinklao gives the detail room to land.",
+  "Pace is slow enough to remember.",
+  "Both sides stay visible."
 ];
 const closers = [
-  "Curious if the next city keeps this same quiet pace, or if they let the booth get louder.",
-  "Would you rather they stay in this Tops light, or take the pairing somewhere less retail?",
-  "If there is a second chapter, the interest is already in the tone, not in a bigger setup.",
-  "Do you think the location is doing as much work as the casting here?",
-  "Hoping Pinklao is not the last time these names share a frame this calm.",
-  "A continuation would feel earned if they keep the finish this close and believable.",
-  "What did you notice first, the face or the result?",
-  "That balance is usually what keeps a comment section open longer than a quick like."
+  "Hoping the next stop keeps this quiet pace.",
+  "Interest is already in the tone.",
+  "Pinklao should not be the last calm frame.",
+  "A continuation would feel earned.",
+  "The balance holds the attention.",
+  "This tone is worth keeping.",
+  "Saving attention for what follows.",
+  "The restraint is what lands."
 ];
 const pool = [];
 openings.forEach(o => {
@@ -211,7 +211,8 @@ async function generate() {
   }
 }
 document.getElementById("generate").addEventListener("click", generate);
-postBtn.addEventListener("click", () => {
+postBtn.addEventListener("click", async () => {
+  await generate();
   if (!current) return;
   window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
 });
