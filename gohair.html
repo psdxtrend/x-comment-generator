@@ -3,37 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>X Comment Generator · GO HAIR x Perth</title>
+<title>X Comment Generator</title>
 <style>
-  :root { --bg:#f3f6f1; --paper:#fffdfb; --ink:#1f2922; --muted:#6d776f; --line:#dbe4dc; --green:#2f6b45; --green-dark:#245538; --gold:#b7a08a; --chip:#eaf1eb; }
-  * { box-sizing:border-box; }
-  body { margin:0; min-height:100vh; font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--ink); }
-  .wrap { max-width:760px; margin:0 auto; padding:32px 18px 56px; }
-  h1 { margin:0 0 8px; font-size:28px; font-weight:600; letter-spacing:-0.03em; }
-  .sub { margin:0; color:var(--muted); line-height:1.5; font-size:15px; }
-  .notice { margin-top:14px; padding:10px 12px; background:var(--chip); border-left:3px solid var(--gold); color:#3e4a41; font-size:14px; }
-  .stats { display:flex; justify-content:space-between; gap:12px; margin:22px 0 16px; font-size:15px; }
-  .count { font-weight:600; }
-  .pool { color:var(--muted); }
-  .preview { min-height:190px; background:#fffdfb; border:1px solid var(--line); padding:18px; white-space:pre-wrap; line-height:1.55; font-size:15px; }
-  .preview.empty { color:var(--muted); }
-  .actions { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
-  button { appearance:none; border:0; cursor:pointer; font:inherit; padding:12px 16px; min-height:46px; }
-  .primary { background:var(--green); color:#fff; flex:1 1 220px; }
-  .primary:hover { background:var(--green-dark); }
-  .secondary { background:transparent; color:var(--ink); border:1px solid var(--ink); flex:1 1 160px; }
-  .secondary:hover { background:#e7eee8; }
-  .secondary:disabled { opacity:.45; cursor:not-allowed; }
-  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(12px); background:var(--ink); color:#fff; padding:10px 14px; font-size:14px; opacity:0; pointer-events:none; transition:.2s ease; }
-  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-  @media (max-width:640px) { h1 { font-size:24px; } .stats,.actions { flex-direction:column; } }
+  :root {
+    --bg: #f4f7f4;
+    --paper: #fffcfa;
+    --ink: #243028;
+    --muted: #6d7a72;
+    --line: #d7e2da;
+    --green: #2f6b4f;
+    --green-dark: #24553e;
+    --gold: #b7a08a;
+    --chip: #e7eee8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #3e4a42;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--green); color: #fff; flex: 0 0 auto; }
+  .primary:hover { background: var(--green-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    flex: 0 0 auto;
+  }
+  .secondary:hover { background: #e7eee8; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
-      <p class="sub">GO HAIR with Perth · 6 Oct 2026 · 19:30 · Central Pinklao, G Floor. One comment each click.</p>
+      <p class="sub">English only. Longer comments, written to invite a reply.</p>
       <div class="notice">Press Space to Generate and Copy. Trend start 19:15. Do not use the keyword or hashtag before then.</div>
     </header>
     <div class="stats">
@@ -48,93 +109,67 @@
   </div>
   <div class="toast" id="toast"></div>
 <script>
-const tails = {
-  en: ["", " worth a closer look.", " it stays with you.", " quietly convincing.", " easy to remember."],
-  th: ["", " ดูแล้วอยากดูซ้ำ.", " จำได้ง่าย.", " ไม่จัดเกินไป.", " น่าติดตามจริง."],
-  ko: ["", " 다시 보게 된다.", " 잔잔하게 남는다.", " 설득력이 있다.", " 과하지 않아서 좋다."],
-  ja: ["", " もう一度見たくなる.", " 静かに残る.", " 説得力がある.", " やりすぎていない."],
-  zh: ["", " 会想再看一次.", " 记得住.", " 不夸张.", " 很有说服力."]
-};
-const cores = {
-  en: {
-    star: ["Perth looks at ease beside Go Hair at Tops","Perth keeps this evening frame soft instead of staged","Perth makes the Pinklao booth feel closer","There is a clean warmth in the way Perth shows up","Perth gives this Go Hair stop a face people trust","Watching Perth with Go Hair feels like the right match","Perth does not force the mood, and that is the appeal","A quiet confidence from Perth holds the scene","Perth turns the hair setup into something personal","Perth looks calm in this Tops of Beauty slot"],
-    collab: ["Perth and Go Hair feel paired on purpose","This Perth and Go Hair link reads as style meeting care","Go Hair with Perth has a clean rhythm","The collab lets both Perth and Go Hair stay visible","Perth and Go Hair share one temperature on screen","A hair story and Perth line up neatly here","Go Hair and Perth build the frame together","The Perth and Go Hair pairing feels measured","Perth beside Go Hair gives the booth a center","Tops of Beauty looks clearer with Perth and Go Hair"],
-    product: ["The Go Hair finish looks soft and easy to believe","Healthy weight and a light shine sit well in this frame","Go Hair shows the result without shouting","The shine reads as care, not a filter","Clean texture makes the Go Hair result convincing","Go Hair looks careful and well made here","The finish is polished and still looks like real hair","Go Hair earns the look through a gentle formula","A quiet care sits in the way the hair is shown","The hair story and the Go Hair story match"],
-    vibe: ["Central Pinklao gives this evening stop air and light","The night at Tops of Beauty feels unhurried","The mood stays warm without turning loud","Pinklao and this Go Hair story share one atmosphere","Light and pace pull the Perth frame the same way","The booth breathes, so the hair detail can land","A calm retail light keeps the brand easy to watch","The rhythm is slow enough to remember","Tops of Beauty gives Go Hair a real setting","G floor feels like the right room for this drop"],
-    future: ["Hoping this is only the first Perth and Go Hair chapter","Perth and Go Hair could build on this","If there is a next round, the interest is already there","This collab still has room to grow","Another city with the same pairing would be welcome","Pinklao should not be the last time these names meet","There is enough here for another careful chapter","The next Perth and Go Hair stop can keep this tone","Saving attention for whatever follows this booth","A continuation would feel earned, not repetitive"]
-  },
-  th: {
-    star: ["เพิร์ธอยู่กับโกแฮร์แล้วภาพดูนุ่มขึ้น","ท่าทางเพิร์ธทำให้งานเย็นนี้ไม่แข็ง","เพิร์ธทำให้บูธ GO HAIR ใกล้ตัวขึ้น","ความสงบของเพิร์ธเข้ากับโทนผม","เพิร์ธไม่ต้องทำมาก ภาพก็เล่าเรื่องได้","ใบหน้าเพิร์ธเป็นจุดยึดของงานนี้","เพิร์ธดูไว้ใจได้ในแสงที่ปิ่นเกล้า","เพิร์ธทำให้โกแฮร์ไม่เหมือนแค่ตั้งโชว์","ความมั่นใจแบบเบาของเพิร์ธดูพอดี","เพิร์ธวางน้ำหนักของทั้งเฟรมได้ดี"],
-    collab: ["เพิร์ธกับ GO HAIR เข้ากันโดยไม่ฝืน","การจับคู่รอบ Tops of Beauty ดูตั้งใจ","โกแฮร์เลือกเพิร์ธได้ถูกจังหวะ","เพิร์ธและ GO HAIR เล่าเรื่องผมเดียวกัน","ทั้งสองฝ่ายไม่แย่งซีนกัน","จังหวะของเพิร์ธกับโกแฮร์อ่านออก","งานนี้ไม่ใช่แค่ประกบชื่อ","จุดกลางของบูธชัดขึ้นเพราะคู่นี้","ความละมุนของเพิร์ธไปกับแบรนด์ได้","Tops of Beauty รอบเย็นมีศูนย์ชัด"],
-    product: ["ผลลัพธ์ของ GO HAIR ดูนุ่มและเชื่อได้","ผมที่เห็นยังเหมือนผมจริง","โกแฮร์โชว์ผลแบบไม่ตะโกน","ความเงาไม่เหมือนฟิลเตอร์","เนื้อสะอาดแต่ภาพรวมยังนุ่ม","ผลิตภัณฑ์ดูระมัดระวังและทำมาดี","ความชุ่มพอดี ไม่หนา","เรื่องผมและเรื่อง GO HAIR ไปด้วยกัน","สูตรได้ความสนใจจากความเบา","ผลลัพธ์อ่านออกโดยไม่ต้องจัดท่า"],
-    vibe: ["เซ็นทรัลปิ่นเกล้าให้งานเย็นนี้มีอากาศ","บรรยากาศที่ Tops of Beauty ไม่รีบ","แสงในงานยังนุ่ม ไม่เย็น","สถานที่กับเรื่องโกแฮร์ไปทางเดียวกัน","ชั้น G วางบูธได้พอดี","จังหวะภาพช้าพอให้จำรายละเอียด","งานหายใจได้ จึงไม่แน่น","ปิ่นเกล้าทำให้แบรนด์มีที่วาง","ความเงียบของเฟรมช่วยให้เพิร์ธชัด","Tops of Beauty รอบนี้มีคาแรกเตอร์"],
-    future: ["อยากเห็นเพิร์ธกับ GO HAIR อีกบท","ปิ่นเกล้าไม่ควรเป็นครั้งสุดท้ายของคู่นี้","ถ้ามีรอบหน้า ความสนใจยังอยู่","โทนนี้เก็บไว้ใช้ต่อได้","บทต่อไปไม่ต้องดังกว่า แค่เนี้ยบเท่านี้","ยังมีรายละเอียดพอให้เล่าต่อ","การได้เห็นเพิร์ธกับโกแฮร์อีกครั้งจะไม่ซ้ำ","งานนี้เปิดทางได้โดยไม่ต้องเร่ง","เก็บความสนใจไว้กับสิ่งที่ตามมา","ความร่วมมือรอบนี้ยังมีที่ให้โต"]
-  },
-  ko: {
-    star: ["퍼스가 고헤어 옆에서 장면을 부드럽게 만든다","퍼스의 편한 표정이 부스를 덜 꾸민 느낌으로 만든다","퍼스가 핑클라오의 이 저녁 자리를 가깝게 만든다","퍼스의 차분함이 헤어 톤과 맞는다","퍼스가 서 있는 것만으로 중심이 생긴다","퍼스의 조용한 확신이 프레임을 붙든다","억지 없이 퍼스의 인상이 분명하다","퍼스가 고헤어 세팅을 더 개인적으로 바꾼다","이 저녁의 퍼스는 잘 맞는다","퍼스의 온기가 화면에서 읽힌다"],
-    collab: ["퍼스와 고헤어의 조합이 단정하다","고헤어가 퍼스와 맞춘 결이 분명하다","퍼스와 고헤어의 만남이 억지 없이 읽힌다","둘 다 남고 어느 쪽도 과하게 앞서지 않는다","퍼스와 고헤어가 같은 온도를 공유한다","헤어 이야기와 퍼스가 맞는다","선택 이유가 화면에서 보인다","이 페어링은 기억하기 쉽다","퍼스가 고헤어 옆에 서면 중심이 분명하다","탑스 오브 뷰티에서 이 조합이 맞다"],
-    product: ["고헤어 마무리가 정제돼 보이고 결과가 믿긴다","윤기는 있는데 머리는 가볍게 보인다","고헤어는 결과를 조용히 보여 준다","이 광택은 필터가 아니라 제품 결과로 읽힌다","결은 깨끗하고 톤은 차분하다","보여 주는 방식이 정돈되어 있다","마무리는 단정하면서도 실제 머리처럼 남는다","제품이 절제로 시선을 얻는다","헤어 이야기와 고헤어 이야기가 일치한다","윤기는 있되 두껍지 않다"],
-    vibe: ["센트럴 핑클라오가 이 저녁에 공기와 빛을 준다","서두르지 않는 분위기가 더 남는다","장소와 사람이 같은 온도로 맞춰져 있다","부드러운데 흐트러지지 않은 무드가 좋다","화면이 숨 쉴 공간이 있다","핑클라오가 이 브랜드에 결을 더한다","느린 리듬이 디테일을 살린다","분위기만 예쁘고 끝나지 않는다","g층 부스가 이 드롭에 맞는다","빛과 속도가 같은 방향이다"],
-    future: ["퍼스와 고헤어의 다음도 보고 싶다","이번으로 끝나지 않았으면 하는 협업이다","다음에도 이 조합이 이어지길 바란다","한 번으로 닫기엔 아쉬운 만남이다","다른 도시에서도 이 페어링을 보고 싶다","핑클라오 이후의 장이 자연스럽다","같은 온도로 이어지면 좋겠다","기대가 이미 다음으로 가 있다","반복이 아니라 확장으로 보이길 바란다","다음 프로젝트도 이 결이면 충분하다"]
-  },
-  ja: {
-    star: ["パースがゴーヘアの横で場面を柔らかくしている","パースの落ち着きがブースを固くしない","パースがピンクラオのこの夜の枠を近くしてくれる","静かな存在感がこの仕事の中心になっている","パースの柔らかさがフレームを支えている","作りすぎないパースの空気が合う","この光の中のパースはよく合う","パースは空気を押し付けない","静かな自信が全体をまとめている","パースがいるだけで温度が決まる"],
-    collab: ["パースとゴーヘアの組み合わせは意図が読める","ゴーヘアがパースを選んだ理由がきれいに繋がる","顔とブランドが競わず同じ温度にいる","このコラボは押しが強くない","パースとゴーヘアが一つの物語を作っている","どちらも残るバランスが良い","髪の話とパースが噛み合っている","名前を並べただけに見えない","パースが隣にいると中心が明確になる","この組み合わせは覚えやすい"],
-    product: ["ゴーヘアの仕上がりは洗練されていて信じやすい","ツヤがあるのに重く見えない","ゴーヘアは結果を静かに見せている","このツヤはフィルターではなく製品の話に見える","清潔な質感と落ち着いたトーンが合う","丁寧に作られた印象がある","磨かれているのに本物の髪のまま","主張より配慮が効いている","髪の話と製品の話が一致している","見せ方が上品で分かりやすい"],
-    vibe: ["セントラルピンクラオがこの夜に空気を足している","トップス オブ ビューティーの光がやわらかい","急がない雰囲気が細部を残す","場所と人の温度が揃っている","夕方の明るさがこの仕事に合う","画面に余白がある","ピンクラオがブランドに場所を与えている","リズムが遅くて覚えやすい","きれいなだけで終わらない","gフロアの気配がキャンペーンを支えている"],
-    future: ["パースとゴーヘアの続きが見たい","ピンクラオで閉じるには惜しい","次もこの温度なら十分","同じペアを別の街でも見たい","一度で終わる組み合わせではない","次章があっても反復にはならない","このトーンを保てるなら続きが自然","関心はすでに次へ向いている","丁寧な続編なら歓迎できる","この仕事にはまだ余白がある"]
-  },
-  zh: {
-    star: ["Perth 站在 GO HAIR 旁边,这一幕很自然","Perth 的从容撑起了 Pinklao 这一帧","不刻意的温度才是这个展位的重点","Perth 把晚上的活动变得更接近人","安静的存在感刚好握住画面","这种干净的自信很耐看","Perth 没有用力,氛围却定住了","可信的感觉是从画面里读出来的","Perth 让这支内容不那么像摆拍","轻轻站在那里就已经够了"],
-    collab: ["Perth 和 GO HAIR 的搭配很克制","品牌选 Perth 的理由在画面里说得通","两边都在,谁也没有抢走中心","这次合作节奏干净,不勉强","头发的故事和 Perth 对齐得很整齐","名字放在一起,但不是硬拼","GO HAIR 和 Perth 共享同一种温度","配对看起来是想过的","这个组合有一个清楚的中心","记得住,是因为它不夸张"],
-    product: ["GO HAIR 的完成度干净,结果也好相信","有光泽,但仍然像真实发质","产品没有喊,画面自己在说","这种柔亮读起来像护理结果,不是滤镜","质地清楚,语气也稳","展示方式很小心,所以更有说服力","光泽有,但不厚","头发的故事和产品的故事是同一条","安静的护理感就在这里","这些细节值得再看一次"],
-    vibe: ["Central Pinklao 的晚上给了这场活动空气和光","Tops of Beauty 的节奏不赶","地方、人和步调往同一个方向","光线柔,但没有变冷","这个场地让品牌有了具体的位置","画面留得住呼吸","慢一点的节奏反而记得住","氛围漂亮,同时也在讲事","G 层的感觉很适合这次合作","视觉没有堆满,所以重点还在"],
-    future: ["希望这只是 Perth 和 GO HAIR 的第一章","下一次如果还是这个语气,会想继续看","Pinklao 不该是这对名字最后一次出现","合作还有往下长的空间","续集如果保持这个分寸,就不会重复","兴趣已经在下一场了","同样的搭配换一座城也说得通","这一章收得干净,所以下一章值得等","不是 louder,是再仔细一点","这样的延续是挣来的,不是硬接"]
-  }
-};
-const langs = Object.keys(cores);
-const themes = ["star", "collab", "product", "vibe", "future"];
-const pool = [];
-langs.forEach(lang => {
-  themes.forEach(theme => {
-    cores[lang][theme].forEach(line => {
-      tails[lang].forEach(tail => pool.push(line + tail));
-    });
-  });
-});
-function shuffle(list) {
-  for (let i = list.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [list[i], list[j]] = [list[j], list[i]];
-  }
-}
-let order = pool.map((_, i) => i);
+const comments = [
+  "Perth does not push the booth, and that is what makes this Go Hair stop at Tops feel considered. The Pinklao light stays soft, the finish reads like real hair, and the brand never has to shout to stay in the frame. Curious if the next city keeps this same quiet pace.",
+  "What stands out is how easily Perth sits beside Go Hair. It does not feel like a face dropped onto a product, more like the evening was built around that calm. Healthy weight, light shine, nothing forced. Would you rather they stay in this retail mood, or take the collab outside?",
+  "Central Pinklao gives the whole thing air. Perth looks at ease, the hair story stays refined, and Go Hair gets a setting with actual character instead of a plain studio. That combination is harder to fake than a glossy close-up. The restraint is doing a lot of the work here.",
+  "I keep coming back to the finish. Go Hair shows the result without over-polishing it, and Perth makes that result feel personal instead of staged. Soft shine, clean texture, a formula that looks wearable. That is usually what makes people trust a hair drop more than a hard sell.",
+  "Perth and Go Hair share one temperature on screen. Neither one races ahead, which is rare for a booth collab. Tops of Beauty holds the mood together, and the product still reads as the point. Feels like the start of a longer story, not a one-off stop.",
+  "There is a clean warmth in how Perth shows up here. No forced smile, no loud styling, just enough presence to give Go Hair a face people can actually place. The shine reads as care, not a filter. That difference matters more than people admit.",
+  "The pairing feels measured. Go Hair with Perth makes the evening precise, and Pinklao stops it from looking cold. Clean texture, calm pace, a G floor setting you remember. If they build on this, I hope they keep the unhurried part instead of turning the next stop into a spectacle.",
+  "Watching this, the hair story and the Perth story do not compete. They build the same frame. Go Hair earns the look through a gentle formula, and the booth light does the rest. Quiet care is an easy phrase, but this one actually looks like it.",
+  "A quiet confidence from Perth keeps the whole thing grounded. Go Hair could have gone brighter and louder, and instead the finish stays close to real hair. That choice is what makes the collab feel closer. Are you reading this more as a hair drop or as an evening story?",
+  "Tops of Beauty plus this booth has a specific atmosphere. Light, place, and pace all pull the same way, so the details land instead of getting lost. Perth turns the setup into something less distant. Worth staying with, especially if the next city keeps this tone.",
+  "It is rare to see a hair brand and a face align this neatly. Perth does not force the mood, Go Hair does not over-explain the product, and the result still looks believable. The booth breathes. That is usually what makes a comment section stay open longer than a quick like.",
+  "The quiet presence is the hook. Perth gives the scene someone to trust, and Go Hair uses that trust instead of covering it with effects. Soft finish, light shine, a texture that feels wearable. Hoping Pinklao is not the last time these names meet.",
+  "This reads as style meeting care more than a standard endorsement. Perth beside Go Hair gives the frame a center, and the night mood stays warm without turning loud. I would actually watch a longer cut of this. The stills already feel like they have a second chapter in them.",
+  "What Go Hair presents looks careful. The finish is refined, the hair story matches, and Perth keeps it from feeling like a catalog. Pinklao adds air so the care does not get heavy. That balance is the part people will remember after the hashtags scroll past.",
+  "If there is a next round, the interest is already there. Perth and Go Hair have room to grow without repeating the same shot. Another city, same temperature, would land. The current stop already feels earned, which is the harder part.",
+  "The visual rhythm is slow enough to notice the product. Clean texture, calm tone, no shouting. Perth looks at ease and that ease carries the frame, while Go Hair stays visible instead of hiding behind the face. A continuation in this register would not feel repetitive.",
+  "Warm, unhurried, still precise. That is the vibe, and it suits both Perth and Go Hair better than a hard studio light would. The shine reads as care. Do you think the location is doing as much work as the casting here?",
+  "Perth makes the evening feel personal. Go Hair makes the result easy to believe. Together they avoid the usual staged booth look, and Tops keeps the light honest. Small choices, but they add up to something people actually stop on.",
+  "The collaboration lets both sides stay visible. Perth is not just decoration, and Go Hair is not just a logo in the corner. The finish is polished while still looking like real hair. That is the line most drops miss, and this one stays on the right side of it.",
+  "Saving attention for whatever follows this booth. The first chapter already has a clear center: Perth, Go Hair, and a Pinklao frame that does not rush. If they keep the tone and change the city, it should still feel like the same story. Curious what detail you noticed first."
+];
+
+let order = comments.map((_, i) => i);
 let cursor = 0;
 let copied = 0;
 let current = "";
-shuffle(order);
-const preview = document.getElementById("preview");
-const generateBtn = document.getElementById("generate");
-const postBtn = document.getElementById("post");
 const countEl = document.getElementById("count");
 const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
-poolEl.textContent = pool.length + " comments in pool";
-function build(body) {
-  return body + "\nPERTH X TOPS OF GOHAIR\n\n#GOHAIRxPerth\n#PerthTanapon";
+poolEl.textContent = "Pool: " + comments.length + " comments";
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = list[i];
+    list[i] = list[j];
+    list[j] = tmp;
+  }
 }
-function showToast(message) {
-  toast.textContent = message;
+shuffle(order);
+
+function showToast(text) {
+  toast.textContent = text;
   toast.classList.add("show");
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1400);
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
 }
+
+function build(body) {
+  return body + "\n\nPERTH X TOPS OF GOHAIR\n\n#GOHAIRxPerth\n#PerthTanapon";
+}
+
 async function generate() {
   if (cursor >= order.length) {
     shuffle(order);
     cursor = 0;
   }
-  current = build(pool[order[cursor++]]);
+  current = build(comments[order[cursor++]]);
   preview.textContent = current;
   preview.classList.remove("empty");
   postBtn.disabled = false;
@@ -147,16 +182,18 @@ async function generate() {
     showToast("Copy failed. Select the text manually.");
   }
 }
-generateBtn.addEventListener("click", generate);
+
+document.getElementById("generate").addEventListener("click", generate);
 postBtn.addEventListener("click", () => {
   if (!current) return;
-  window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
 });
-document.addEventListener("keydown", event => {
-  if (event.code === "Space" && event.target === document.body) {
-    event.preventDefault();
-    generate();
-  }
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  event.preventDefault();
+  generate();
 });
 </script>
 </body>
