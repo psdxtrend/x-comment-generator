@@ -3,37 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>X Comment Generator · Gillette Venus x Santa</title>
+<title>X Comment Generator</title>
 <style>
-  :root { --bg:#f6f1ec; --paper:#fffdfb; --ink:#2a2422; --muted:#7a706a; --line:#e6dbd3; --rose:#8d3b4a; --rose-dark:#722f3c; --gold:#b7a08a; --chip:#f3ebe4; }
-  * { box-sizing:border-box; }
-  body { margin:0; min-height:100vh; font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--ink); }
-  .wrap { max-width:760px; margin:0 auto; padding:32px 18px 56px; }
-  h1 { margin:0 0 8px; font-size:28px; font-weight:600; letter-spacing:-0.03em; }
-  .sub { margin:0; color:var(--muted); line-height:1.5; font-size:15px; }
-  .notice { margin-top:14px; padding:10px 12px; background:var(--chip); border-left:3px solid var(--gold); color:#4e463f; font-size:14px; }
-  .stats { display:flex; justify-content:space-between; gap:12px; margin:22px 0 16px; font-size:15px; }
-  .count { font-weight:600; }
-  .pool { color:var(--muted); }
-  .preview { min-height:190px; background:var(--paper); border:1px solid var(--line); padding:18px; white-space:pre-wrap; line-height:1.55; font-size:15px; }
-  .preview.empty { color:var(--muted); }
-  .actions { display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
-  button { appearance:none; border:0; cursor:pointer; font:inherit; padding:12px 16px; min-height:46px; }
-  .primary { background:var(--rose); color:#fff; flex:1 1 220px; }
-  .primary:hover { background:var(--rose-dark); }
-  .secondary { background:transparent; color:var(--ink); border:1px solid var(--ink); flex:1 1 160px; }
-  .secondary:hover { background:#efe8e1; }
-  .secondary:disabled { opacity:.45; cursor:not-allowed; }
-  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(12px); background:var(--ink); color:#fff; padding:10px 14px; font-size:14px; opacity:0; pointer-events:none; transition:.2s ease; }
-  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-  @media (max-width:640px) { h1 { font-size:24px; } .stats,.actions { flex-direction:column; } }
+  :root {
+    --bg: #f7f3f6;
+    --paper: #fffdfb;
+    --ink: #2a2428;
+    --muted: #7a6e74;
+    --line: #e6dbe2;
+    --rose: #8d3b5a;
+    --rose-dark: #722f48;
+    --gold: #b7a08a;
+    --chip: #f3ebe4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #4e463f;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--rose); color: #fff; flex: 0 0 auto; }
+  .primary:hover { background: var(--rose-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    flex: 0 0 auto;
+  }
+  .secondary:hover { background: #efe8e1; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
-      <p class="sub">Tops of Beauty × Gillette Venus · Santa · 6 Oct 2026 · 17:00 · Central Pinklao, G Floor. One comment each click.</p>
+      <p class="sub">English only. Longer comments, written to invite a reply.</p>
       <div class="notice">Press Space to Generate and Copy. Trend start 16:45. Do not use the keyword or hashtag before then.</div>
     </header>
     <div class="stats">
@@ -48,86 +109,88 @@
   </div>
   <div class="toast" id="toast"></div>
 <script>
-const tails = {
-  en: ["", " worth a closer look.", " it stays with you.", " quietly convincing.", " easy to remember."],
-  th: ["", " ดูแล้วอยากดูซ้ำ.", " จำได้ง่าย.", " ไม่จัดเกินไป.", " น่าติดตามจริง."],
-  ko: ["", " 다시 보게 된다.", " 잔잔하게 남는다.", " 설득력이 있다.", " 과하지 않아서 좋다."],
-  ja: ["", " もう一度見たくなる.", " 静かに残る.", " 説得力がある.", " やりすぎていない."],
-  zh: ["", " 会想再看一次.", " 记得住.", " 不夸张.", " 很有说服力."]
-};
-const cores = {
-  en: {
-    star: ["Santa looks calm beside Gillette Venus at Tops","Santa keeps this Venus moment soft instead of staged","Santa makes the Pinklao frame feel closer","There is an easy warmth in the way Santa shows up","Santa gives this beauty stop a face people trust","Watching Santa with Venus feels like the right match","Santa does not force the mood, and that is the appeal","A quiet confidence from Santa holds the scene","Santa turns the Venus setup into something personal","Santa looks at ease in this Tops of Beauty slot"],
-    collab: ["Santa and Gillette Venus feel paired on purpose","This Santa and Venus link reads as charm meeting care","Gillette Venus with Santa has a clean rhythm","The collab lets both Santa and Venus stay visible","Santa and Gillette Venus share one temperature on screen","A smooth-skin story and Santa line up neatly here","Gillette Venus and Santa build the frame together","The Santa and Venus pairing feels measured","Santa beside Gillette Venus gives the booth a center","Tops of Beauty looks clearer with Santa and Venus"],
-    product: ["The Venus finish looks smooth and easy to believe","Soft skin and a close shave sit well in this frame","Gillette Venus shows the result without shouting","The smoothness reads as a shave, not a filter","Clean lines make the Venus result convincing","Gillette Venus looks careful and well made here","The finish is polished and still looks like real skin","Venus earns the look through a gentle shave","A quiet care sits in the way Venus is shown","The skin story and the Venus story match"],
-    vibe: ["Central Pinklao gives this Venus stop air and light","The afternoon at Tops of Beauty feels unhurried","The mood stays soft without turning cold","Pinklao and this Venus story share one atmosphere","Light and pace pull the Santa frame the same way","The booth breathes, so the Venus detail can land","A calm retail light keeps the brand easy to watch","The rhythm is slow enough to remember","Tops of Beauty gives Gillette Venus a real setting","G floor feels like the right room for this drop"],
-    future: ["Hoping this is only the first Santa and Venus chapter","Santa and Gillette Venus could build on this","If there is a next round, the interest is already there","This collab still has room to grow","Another city with the same pairing would be welcome","Pinklao should not be the last time these names meet","There is enough here for another careful chapter","The next Santa and Venus stop can keep this tone","Saving attention for whatever follows this booth","A continuation would feel earned, not repetitive"]
-  },
-  th: {
-    star: ["ซานต้าอยู่กับ Venus แล้วภาพดูนุ่มขึ้น","ท่าทางซานต้าทำให้งานบ่ายนี้ไม่แข็ง","ซานต้าทำให้บูธ Gillette Venus ใกล้ตัวขึ้น","ความสงบของซานต้าเข้ากับโทนผิวเรียบ","ซานต้าไม่ต้องทำมาก ภาพก็เล่าเรื่องได้","ใบหน้าซานต้าเป็นจุดยึดของงานนี้","ซานต้าดูไว้ใจได้ในแสงที่ปิ่นเกล้า","ซานต้าทำให้ Venus ไม่เหมือนแค่ตั้งโชว์","ความมั่นใจแบบเบาของซานต้าดูพอดี","ซานต้าวางน้ำหนักของทั้งเฟรมได้ดี"],
-    collab: ["ซานต้ากับ Gillette Venus เข้ากันโดยไม่ฝืน","การจับคู่รอบ Tops of Beauty ดูตั้งใจ","Gillette Venus เลือกซานต้าได้ถูกจังหวะ","ซานต้าและ Venus เล่าเรื่องผิวเดียวกัน","ทั้งสองฝ่ายไม่แย่งซีนกัน","จังหวะของซานต้ากับ Venus อ่านออก","งานนี้ไม่ใช่แค่ประกบชื่อ","จุดกลางของบูธชัดขึ้นเพราะคู่นี้","ความละมุนของซานต้าไปกับมีดโกนได้","Tops of Beauty รอบนี้มีศูนย์ชัด"],
-    product: ["ผลโกนของ Venus ดูเรียบและเชื่อได้","ผิวที่เห็นยังเหมือนผิวจริง","Gillette Venus โชว์ผลแบบไม่ตะโกน","ความเนียนไม่เหมือนฟิลเตอร์","เส้นคมแต่ภาพรวมยังนุ่ม","ผลิตภัณฑ์ดูระมัดระวังและทำมาดี","ความละมุนพอดี ไม่หนา","เรื่องผิวและเรื่อง Venus ไปด้วยกัน","มีดโกนได้ความสนใจจากความเบา","ผลลัพธ์อ่านออกโดยไม่ต้องจัดท่า"],
-    vibe: ["เซ็นทรัลปิ่นเกล้าให้งานนี้มีอากาศ","บรรยากาศบ่ายที่ Tops of Beauty ไม่รีบ","แสงในงานยังนุ่ม ไม่เย็น","สถานที่กับเรื่อง Venus ไปทางเดียวกัน","ชั้น G วางบูธได้พอดี","จังหวะภาพช้าพอให้จำรายละเอียด","งานหายใจได้ จึงไม่แน่น","ปิ่นเกล้าทำให้แบรนด์มีที่วาง","ความเงียบของเฟรมช่วยให้ซานต้าชัด","Tops of Beauty รอบนี้มีคาแรกเตอร์"],
-    future: ["อยากเห็นซานต้ากับ Gillette Venus อีกบท","ปิ่นเกล้าไม่ควรเป็นครั้งสุดท้ายของคู่นี้","ถ้ามีรอบหน้า ความสนใจยังอยู่","โทนนี้เก็บไว้ใช้ต่อได้","บทต่อไปไม่ต้องดังกว่า แค่เนี้ยบเท่านี้","ยังมีรายละเอียดพอให้เล่าต่อ","การได้เห็นซานต้ากับ Venus อีกครั้งจะไม่ซ้ำ","งานนี้เปิดทางได้โดยไม่ต้องเร่ง","เก็บความสนใจไว้กับสิ่งที่ตามมา","ความร่วมมือรอบนี้ยังมีที่ให้โต"]
-  },
-  ko: {
-    star: ["산타가 비너스 옆에서 장면을 부드럽게 만든다","산타의 편한 표정이 부스를 덜 꾸민 느낌으로 만든다","산타가 핑클라오의 이 자리를 가깝게 만든다","산타의 차분함이 매끈한 피부 톤과 맞는다","산타가 서 있는 것만으로 중심이 생긴다","산타의 조용한 확신이 프레임을 붙든다","억지 없이 산타의 인상이 분명하다","산타가 비너스 세팅을 더 개인적으로 바꾼다","이 오후의 산타는 잘 맞는다","산타의 온기가 화면에서 읽힌다"],
-    collab: ["산타와 질레트 비너스의 조합이 단정하다","비너스가 산타와 맞춘 결이 분명하다","산타와 비너스의 만남이 억지 없이 읽힌다","둘 다 남고 어느 쪽도 과하게 앞서지 않는다","산타와 비너스가 같은 온도를 공유한다","매끄러운 피부 이야기와 산타가 맞는다","선택 이유가 화면에서 보인다","이 페어링은 기억하기 쉽다","산타가 비너스 옆에 서면 중심이 분명하다","탑스 오브 뷰티에서 이 조합이 맞다"],
-    product: ["비너스 면도가 정제돼 보이고 결과가 믿긴다","가까운 면도인데 피부는 부드러워 보인다","질레트 비너스는 결과를 조용히 보여 준다","이 매끄러움은 필터가 아니라 제품 결과로 읽힌다","선은 깨끗하고 톤은 차분하다","보여 주는 방식이 정돈되어 있다","마무리는 단정하면서도 실제 피부처럼 남는다","제품이 절제로 시선을 얻는다","피부 이야기와 비너스 이야기가 일치한다","광택은 있되 두껍지 않다"],
-    vibe: ["센트럴 핑클라오가 이 오후에 공기와 빛을 준다","서두르지 않는 분위기가 더 남는다","장소와 사람이 같은 온도로 맞춰져 있다","부드러운데 흐트러지지 않은 무드가 좋다","화면이 숨 쉴 공간이 있다","핑클라오가 이 브랜드에 결을 더한다","느린 리듬이 디테일을 살린다","분위기만 예쁘고 끝나지 않는다","g층 부스가 이 드롭에 맞는다","빛과 속도가 같은 방향이다"],
-    future: ["산타와 질레트 비너스의 다음도 보고 싶다","이번으로 끝나지 않았으면 하는 협업이다","다음에도 이 조합이 이어지길 바란다","한 번으로 닫기엔 아쉬운 만남이다","다른 도시에서도 이 페어링을 보고 싶다","핑클라오 이후의 장이 자연스럽다","같은 온도로 이어지면 좋겠다","기대가 이미 다음으로 가 있다","반복이 아니라 확장으로 보이길 바란다","다음 프로젝트도 이 결이면 충분하다"]
-  },
-  ja: {
-    star: ["サンタがヴィーナスの横で場面を柔らかくしている","サンタの落ち着きがブースを固くしない","サンタがピンクラオのこの枠を近くしてくれる","静かな存在感がこの仕事の中心になっている","サンタの柔らかさがフレームを支えている","作りすぎないサンタの空気が合う","この光の中のサンタはよく合う","サンタは空気を押し付けない","静かな自信が全体をまとめている","サンタがいるだけで温度が決まる"],
-    collab: ["サンタとジレットヴィーナスの組み合わせは意図が読める","ヴィーナスがサンタを選んだ理由がきれいに繋がる","顔とブランドが競わず同じ温度にいる","このコラボは押しが強くない","サンタとヴィーナスが一つの物語を作っている","どちらも残るバランスが良い","滑らかな肌の話とサンタが噛み合っている","名前を並べただけに見えない","サンタが隣にいると中心が明確になる","この組み合わせは覚えやすい"],
-    product: ["ヴィーナスの仕上がりは洗練されていて信じやすい","近い剃り味なのに肌が荒れて見えない","ジレットヴィーナスは結果を静かに見せている","この滑らかさはフィルターではなく製品の話に見える","清潔な線と落ち着いたトーンが合う","丁寧に作られた印象がある","磨かれているのに本物の肌のまま","主張より配慮が効いている","肌の話と製品の話が一致している","見せ方が上品で分かりやすい"],
-    vibe: ["セントラルピンクラオがこの午後に空気を足している","トップス オブ ビューティーの光がやわらかい","急がない雰囲気が細部を残す","場所と人の温度が揃っている","午後の明るさがこの仕事に合う","画面に余白がある","ピンクラオがブランドに場所を与えている","リズムが遅くて覚えやすい","きれいなだけで終わらない","gフロアの気配がキャンペーンを支えている"],
-    future: ["サンタとジレットヴィーナスの続きが見たい","ピンクラオで閉じるには惜しい","次もこの温度なら十分","同じペアを別の街でも見たい","一度で終わる組み合わせではない","次章があっても反復にはならない","このトーンを保てるなら続きが自然","関心はすでに次へ向いている","丁寧な続編なら歓迎できる","この仕事にはまだ余白がある"]
-  },
-  zh: {
-    star: ["Santa 站在 Gillette Venus 旁边,这一幕很自然","Santa 的从容撑起了 Pinklao 这一帧","不刻意的温度才是这个展位的重点","Santa 把下午的活动变得更接近人","安静的存在感刚好握住画面","这种柔和的自信很耐看","Santa 没有用力,氛围却定住了","可信的感觉是从画面里读出来的","Santa 让这支内容不那么像摆拍","轻轻站在那里就已经够了"],
-    collab: ["Santa 和 Gillette Venus 的搭配很克制","品牌选 Santa 的理由在画面里说得通","两边都在,谁也没有抢走中心","这次合作节奏干净,不勉强","光滑肌肤的故事和 Santa 对齐得很整齐","名字放在一起,但不是硬拼","Gillette Venus 和 Santa 共享同一种温度","配对看起来是想过的","这个组合有一个清楚的中心","记得住,是因为它不夸张"],
-    product: ["Venus 的完成度干净,结果也好相信","贴近的同时仍然像真实皮肤","产品没有喊,画面自己在说","这种顺滑读起来像剃须结果,不是滤镜","质地清楚,语气也稳","展示方式很小心,所以更有说服力","光泽有,但不厚","皮肤的故事和产品的故事是同一条","安静的护理感就在这里","这些细节值得再看一次"],
-    vibe: ["Central Pinklao 给了这场活动空气和光","Tops of Beauty 的午后节奏不赶","地方、人和步调往同一个方向","光线柔,但没有变冷","这个场地让品牌有了具体的位置","画面留得住呼吸","慢一点的节奏反而记得住","氛围漂亮,同时也在讲事","G 层的感觉很适合这次合作","视觉没有堆满,所以重点还在"],
-    future: ["希望这只是 Santa 和 Gillette Venus 的第一章","下一次如果还是这个语气,会想继续看","Pinklao 不该是这对名字最后一次出现","合作还有往下长的空间","续集如果保持这个分寸,就不会重复","兴趣已经在下一场了","同样的搭配换一座城也说得通","这一章收得干净,所以下一章值得等","不是 louder,是再仔细一点","这样的延续是挣来的,不是硬接"]
-  }
-};
-const langs = Object.keys(cores);
-const themes = ["star", "collab", "product", "vibe", "future"];
+const openings = [
+  "Santa looks calm beside Gillette Venus at Tops, and that calm is what holds the afternoon together.",
+  "This Santa and Venus stop does not feel staged. The booth stays soft, and the face stays close.",
+  "Gillette Venus with Santa has a clean rhythm. Neither side has to push to stay visible.",
+  "Central Pinklao gives this Tops of Beauty slot air, and Santa uses that air instead of filling it.",
+  "The pairing reads as care meeting a clear finish. Santa keeps the frame personal, Venus keeps the result sharp.",
+  "Watching Santa in this light, the product story lands before the branding does.",
+  "A soft confidence from Santa turns the Venus setup into something less like a demo.",
+  "The afternoon at Tops feels unhurried, which is rare for a booth drop and suits Santa.",
+  "Gillette Venus chose a face that does not compete with the finish, and that choice shows.",
+  "Santa beside Venus gives the stop a center without making the product disappear.",
+  "There is a clean warmth in how Santa shows up here. No loud pose, no forced gloss.",
+  "This collab lets both names stay in the same temperature. That is harder than it looks.",
+  "The booth breathes, so the finish can actually be read instead of guessed.",
+  "Santa makes Pinklao feel closer. Gillette Venus makes the reason for stopping obvious.",
+  "Soft retail light, a calm face, and a result that does not shout. That is the whole frame.",
+  "Venus looks careful here, and Santa is the reason the care does not feel cold.",
+  "The afternoon slot at Tops of Beauty has a specific pace, and Santa matches it.",
+  "What holds this is not a slogan. It is Santa standing still long enough for the finish to register.",
+  "Pinklao plus this Venus story has a real setting, not a blank backdrop.",
+  "Santa does not force the mood, and that restraint is the appeal of the stop.",
+  "The collab feels measured. Face and formula share the shot instead of trading it.",
+  "A grooming drop usually rushes. This one with Santa slows down just enough to notice.",
+  "Tops of Beauty looks clearer once Santa and Gillette Venus are in the same frame.",
+  "The first thing that lands is the calm, then the smoothness, then the fact that both feel intentional.",
+  "Santa keeps this afternoon frame soft. Venus keeps it precise. The mix works."
+];
+const middles = [
+  "The finish looks smooth and easy to believe, closer to care than to a filter.",
+  "A clean result is doing the convincing. The product does not need a louder claim.",
+  "Gillette Venus shows the outcome without covering Santa, which is why the still feels honest.",
+  "The smoothness reads as a real finish, not a grade. That is the line most booth shots miss.",
+  "Nothing about the moment looks overworked, and that restraint matches the face.",
+  "You can see the booth, the light, and the result in one glance, and none of them fight.",
+  "It stays polished while still looking close to skin, which is the harder version of this ad.",
+  "The Pinklao setting gives the drop a room, so the detail has somewhere to land.",
+  "Pace matters here. Slow enough to remember the finish, not so slow that it turns stiff.",
+  "Both sides stay visible. Santa is not decoration, and Venus is not a logo in the corner."
+];
+const closers = [
+  "Curious if the next city keeps this same quiet pace, or if they let the booth get louder.",
+  "Would you rather they stay in this Tops light, or take the pairing somewhere less retail?",
+  "If there is a second chapter, the interest is already in the tone, not in a bigger setup.",
+  "Do you think the location is doing as much work as the casting here?",
+  "Hoping Pinklao is not the last time these names share a frame this calm.",
+  "A continuation would feel earned if they keep the finish this close and believable.",
+  "What did you notice first, the face or the result?",
+  "That balance is usually what keeps a comment section open longer than a quick like."
+];
 const pool = [];
-langs.forEach(lang => {
-  themes.forEach(theme => {
-    cores[lang][theme].forEach(line => {
-      tails[lang].forEach(tail => pool.push(line + tail));
-    });
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
   });
 });
-function shuffle(list) {
-  for (let i = list.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [list[i], list[j]] = [list[j], list[i]];
-  }
-}
 let order = pool.map((_, i) => i);
 let cursor = 0;
 let copied = 0;
 let current = "";
-shuffle(order);
-const preview = document.getElementById("preview");
-const generateBtn = document.getElementById("generate");
-const postBtn = document.getElementById("post");
 const countEl = document.getElementById("count");
 const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
-poolEl.textContent = pool.length + " comments in pool";
-function build(body) {
-  return body + "\nSANTA WITH VENUS AT TOPS\n\n#GilletteVenusxSanta\n#Santapp";
+poolEl.textContent = "Pool: " + pool.length + " comments";
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = list[i];
+    list[i] = list[j];
+    list[j] = tmp;
+  }
 }
-function showToast(message) {
-  toast.textContent = message;
+shuffle(order);
+function showToast(text) {
+  toast.textContent = text;
   toast.classList.add("show");
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1400);
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+function build(body) {
+  return body + "\n\nSANTA WITH VENUS AT TOPS\n\n#GilletteVenusxSanta\n#Santapp";
 }
 async function generate() {
   if (cursor >= order.length) {
@@ -147,16 +210,17 @@ async function generate() {
     showToast("Copy failed. Select the text manually.");
   }
 }
-generateBtn.addEventListener("click", generate);
+document.getElementById("generate").addEventListener("click", generate);
 postBtn.addEventListener("click", () => {
   if (!current) return;
-  window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
 });
-document.addEventListener("keydown", event => {
-  if (event.code === "Space" && event.target === document.body) {
-    event.preventDefault();
-    generate();
-  }
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  event.preventDefault();
+  generate();
 });
 </script>
 </body>
