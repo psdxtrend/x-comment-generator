@@ -12,8 +12,7 @@
     --muted: #7a706a;
     --line: #e6dbd3;
     --rose: #8d3b4a;
-    --rose-dark: #722f3c;
-    --gold: #b7a08a;
+    --green: #2f6b4f;
     --chip: #f3ebe4;
   }
   * { box-sizing: border-box; }
@@ -26,245 +25,51 @@
   }
   .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
   h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
-  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
-  .notice {
-    margin-top: 14px;
-    padding: 10px 12px;
-    background: var(--chip);
-    border-left: 3px solid var(--gold);
-    color: #4e463f;
-    font-size: 14px;
-  }
-  .stats {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin: 22px 0 16px;
-    font-size: 15px;
-  }
-  .count { font-weight: 600; }
-  .pool { color: var(--muted); }
-  .preview {
-    min-height: 190px;
+  .sub { margin: 0 0 22px; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  a.card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
     background: var(--paper);
     border: 1px solid var(--line);
-    padding: 18px;
-    white-space: pre-wrap;
-    line-height: 1.55;
-    font-size: 15px;
+    padding: 16px 16px 14px;
+    margin-bottom: 12px;
   }
-  .preview.empty { color: var(--muted); }
-  .actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-  button {
-    appearance: none;
-    border: 0;
-    cursor: pointer;
-    font: inherit;
-    padding: 12px 16px;
-    min-height: 46px;
-  }
-  .primary { background: var(--rose); color: #fff; flex: 1 1 220px; }
-  .primary:hover { background: var(--rose-dark); }
-  .secondary {
-    background: transparent;
-    color: var(--ink);
-    border: 1px solid var(--ink);
-    flex: 1 1 160px;
-  }
-  .secondary:hover { background: #efe8e1; }
-  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
-  .toast {
-    position: fixed;
-    left: 50%;
-    bottom: 22px;
-    transform: translateX(-50%) translateY(12px);
-    background: var(--ink);
+  a.card:hover { border-color: #c9b8ae; }
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     color: #fff;
-    padding: 10px 14px;
-    font-size: 14px;
-    opacity: 0;
-    pointer-events: none;
-    transition: 0.2s ease;
+    padding: 3px 8px;
+    margin-bottom: 8px;
   }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  @media (max-width: 640px) {
-    h1 { font-size: 24px; }
-    .stats { flex-direction: column; }
-    .actions { flex-direction: column; }
-  }
+  .tag.hair { background: var(--green); }
+  .tag.venus { background: var(--rose); }
+  h2 { margin: 0 0 6px; font-size: 18px; font-weight: 600; }
+  p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .go { margin-top: 10px; font-size: 13px; color: var(--ink); }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>X Comment Generator</h1>
-      <p class="sub">One comment each click. Tone and language are chosen automatically.</p>
-      <div class="notice">Press Space to Generate and Copy.</div>
-    </header>
-    <div class="stats">
-      <div class="count" id="count">Copied: 0 comments</div>
-      <div class="pool" id="pool"></div>
-    </div>
-    <div class="preview empty" id="preview">Your comment will appear here.</div>
-    <div class="actions">
-      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
-      <button class="secondary" id="post" type="button" disabled>Post X</button>
-    </div>
+    <h1>X Comment Generator</h1>
+    <p class="sub">Pick a job. Each link opens its own comment page.</p>
+
+    <a class="card" href="gohair.html">
+      <span class="tag hair">Go Hair</span>
+      <h2>Perth x Go Hair</h2>
+      <p>Tops of Beauty, Central Pinklao. Trend start 19:15.</p>
+      <div class="go">Open generator →</div>
+    </a>
+
+    <a class="card" href="venus.html">
+      <span class="tag venus">Venus</span>
+      <h2>Santa x Gillette Venus</h2>
+      <p>Tops of Beauty, Central Pinklao. Trend start 16:45.</p>
+      <div class="go">Open generator →</div>
+    </a>
   </div>
-  <div class="toast" id="toast"></div>
-<script>
-const tails = {
-  en: ["", " Worth a closer look.", " It stays with you.", " Quietly convincing.", " Easy to remember."],
-  ko: ["", " 다시 보게 된다.", " 잔잔하게 남는다.", " 설득력이 있다.", " 과하지 않아서 좋다."],
-  th: ["", " ดูแล้วอยากดูซ้ำ.", " จำได้ง่าย.", " ไม่จัดเกินไป.", " น่าติดตามจริง."],
-  ja: ["", " もう一度見たくなる.", " 静かに残る.", " 説得力がある.", " やりすぎていない."],
-  zh: ["", " 会想再看一次.", " 记得住.", " 不夸张.", " 很有说服力."],
-  es: ["", " Da ganas de volver a verlo.", " Se queda en la memoria.", " Sin excesos.", " Resulta convincente."],
-  fr: ["", " On a envie de le revoir.", " Cela reste en tete.", " Sans exces.", " Assez convaincant."],
-  id: ["", " Membuat ingin menonton lagi.", " Mudah diingat.", " Tidak berlebihan.", " Cukup meyakinkan."],
-  de: ["", " Man sieht es gern noch einmal.", " Es bleibt haengen.", " Ohne Uebertreibung.", " Ueberzeugend ruhig."],
-  pt: ["", " Da vontade de ver de novo.", " Fica na memoria.", " Sem excesso.", " Convence com calma."]
-};
-const cores = {
-  en: {
-    santa: ["Santa brings a calm charm that makes this moment feel considered","Santa looks at ease here, and that ease carries the whole frame","There is an honest warmth in the way Santa shows up","Santa makes the campaign feel personal instead of staged","The quiet presence of Santa is what holds this together","Santa gives the scene a face people can actually trust","Watching Santa in this light feels like the right match","Santa does not force the mood, and that is the appeal","A soft confidence from Santa keeps the story grounded","Santa turns a polished setup into something closer"],
-    collab: ["Santa and SeoulSocietyClinic feel paired with intention","This link between Santa and SeoulSocietyClinic reads as taste meeting care","SeoulSocietyClinic choosing Santa makes the collaboration feel precise","Santa with SeoulSocietyClinic has a clean, unforced rhythm","The collaboration lets both Santa and SeoulSocietyClinic stay visible","Santa and SeoulSocietyClinic share one temperature on screen","It is rare to see a clinic story and Santa align this neatly","SeoulSocietyClinic and Santa build the frame instead of competing in it","The pairing of Santa and SeoulSocietyClinic feels measured","Santa beside SeoulSocietyClinic gives the campaign a clear center"],
-    product: ["The products look refined, and the result is easy to believe","Soft finish, clear skin, and a texture that feels wearable","SeoulSocietyClinic shows the products without shouting","The glow here reads as a product result, not a filter","Clean texture and a calm tone make the products convincing","What SeoulSocietyClinic presents looks careful and well made","The finish is polished while still looking like real skin","These products earn the attention through restraint","A quiet luxury sits in the way the products are shown","The skin story and the product story match"],
-    vibe: ["The Rayong setting gives the campaign air and light","This vibe is coastal, warm, and still precise","Everything about this drop feels unhurried in the best way","The evening mood stays polished without turning cold","Rayong plus this clinic story has a specific atmosphere","Light, place, and pace all pull in the same direction","The campaign breathes, which makes the details land","A soft coastal frame keeps the brand feeling elevated","The visual rhythm is slow enough to remember","Rayong gives SeoulSocietyClinic a setting with real character"],
-    future: ["Hoping this is only the first chapter for Santa and SeoulSocietyClinic","Would like to see Santa and SeoulSocietyClinic build on this","If there is a next round, the interest is already there","This collaboration has room to grow","A later city and the same pairing would be welcome","Rayong should not be the last time these names meet","There is enough here for another carefully made chapter","The next Santa and SeoulSocietyClinic project can keep this tone","Saving attention for whatever follows this campaign","A continuation would feel earned, not repetitive"]
-  },
-  ko: {
-    santa: ["산타가 이 장면에 있으면 공기가 한결 자연스럽다","산타의 편안한 표정이 캠페인을 덜 꾸민 느낌으로 만든다","산타의 담백한 매력이 이번 자리와 맞는다","과하지 않은 산타의 존재감이 오래 남는다","산타가 서 있는 것만으로 협업의 온도가 정해진다","산타의 차분함이 화면의 중심이다","산타가 가까워 보이게 만드는 힘이 있다","억지 미소 없이도 산타의 인상이 분명하다","산타가 이 캠페인을 개인적인 이야기로 바꾼다","산타의 조용한 확신이 보기 좋다"],
-    collab: ["산타와 SeoulSocietyClinic의 조합이 단정하다","SeoulSocietyClinic이 산타와 맞춘 결이 분명하다","산타와 클리닉의 만남이 억지 없이 읽힌다","이번 협업은 얼굴과 브랜드가 서로를 맞춰 준다","산타와 SeoulSocietyClinic의 연결이 설득력 있다","둘 다 남고, 어느 쪽도 과하게 앞서지 않는다","클리닉과 산타가 같은 방향을 본다","선택 이유가 화면에서 바로 보인다","산타와 SeoulSocietyClinic은 서로 밀어주지 않고 어울린다","이 조합은 기억하기 쉬운 형태다"],
-    product: ["제품이 말하려는 결이 화면에 보인다","과한 광택 없이 정돈된 피부가 제품 이야기를 대신한다","SeoulSocietyClinic 제품이 조용히 빛난다","결과물이 필터처럼 보이지 않아 더 믿음이 간다","텍스처가 깨끗하고 쓰는 장면이 부담스럽지 않다","완성도가 높으면서도 피부처럼 남는다","제품의 톤이 차분해서 보기 좋다","보여 주는 방식이 정돈되어 있다","광택은 있되 두껍지 않다","제품과 피부의 이야기가 일치한다"],
-    vibe: ["라용의 공기감이 캠페인 전체를 살린다","부드러운데 흐트러지지 않은 무드가 좋다","해변의 빛과 클리닉의 단정함이 잘 붙는다","서두르지 않는 바이브라서 더 남는다","장소와 사람이 같은 온도로 맞춰져 있다","저녁 빛이 협업의 결을 정한다","화면이 숨 쉴 공간이 있다","라용이 이 브랜드에 결을 더한다","느린 리듬이 디테일을 살린다","분위기만 예쁘고 끝나지 않는다"],
-    future: ["산타와 SeoulSocietyClinic의 다음도 보고 싶다","이번으로 끝나지 않았으면 하는 협업이다","다음 시즌에도 이 조합이 이어지길 바란다","한 번으로 닫기엔 아쉬운 만남이다","다른 도시에서도 이 협업을 보고 싶다","라용 이후의 장이 자연스럽다","같은 온도로 이어지면 좋겠다","다음 프로젝트도 이 결이면 충분하다","기대가 이미 다음으로 가 있다","반복이 아니라 확장으로 보이길 바란다"]
-  },
-  th: {
-    santa: ["ซานต้าทำให้ภาพนี้ดูเป็นธรรมชาติ","ท่าทางของซานต้าทำให้แคมเปญไม่แข็ง","ซานต้าอยู่ตรงนี้แล้วบรรยากาศเปลี่ยน","ความสงบของซานต้าเข้ากับโทนนี้","ซานต้าไม่ต้องทำมาก ภาพก็เล่าเรื่องได้","ใบหน้าของซานต้าให้แคมเปญมีจุดยึด","ความไว้ใจได้ของซานต้าอ่านออกจากภาพ","ซานต้าทำให้เรื่องนี้ใกล้ตัวขึ้น","ความมั่นใจแบบเบา ๆ ของซานต้าดูดี","ซานต้าวางน้ำหนักของทั้งชุดได้พอดี"],
-    collab: ["ซานต้ากับ SeoulSocietyClinic เข้ากันโดยไม่ฝืน","การจับคู่ครั้งนี้ดูตั้งใจและเนี้ยบ","SeoulSocietyClinic เลือกซานต้าได้ถูกจังหวะ","ความร่วมมือรอบนี้มีทั้งความละมุนและความชัด","ซานต้าและคลินิกเล่าเรื่องเดียวกันได้","ทั้งสองฝ่ายไม่แย่งซีน","ความตั้งใจของการจับคู่อ่านออก","ซานต้ากับ SeoulSocietyClinic มีจังหวะเดียวกัน","งานนี้ดูมีการคิด ไม่ใช่แค่ประกบชื่อ","จุดศูนย์กลางของแคมเปญชัดขึ้นเพราะคู่นี้"],
-    product: ["ผลิตภัณฑ์ดูเรียบ แต่ผลบนผิวอ่านออก","โทนผิวทำให้เชื่อในผลิตภัณฑ์มากขึ้น","SeoulSocietyClinic โชว์ผลิตภัณฑ์แบบไม่ตะโกน","ความเงาที่เห็นไม่เหมือนฟิลเตอร์","เนื้อดูสะอาดและภาพรวมไม่จัดเกิน","ผลลัพธ์ยังดูเป็นผิวจริง","วิธีนำเสนอผลิตภัณฑ์เรียบและมั่น","ความมันพอดี ไม่หนา","ผลิตภัณฑ์ได้ความสนใจจากความระมัดระวัง","เรื่องผิวและเรื่องผลิตภัณฑ์ไปด้วยกัน"],
-    vibe: ["ระยองทำให้แคมเปญมีอากาศและแสง","ไวบ์รอบนี้ละมุนแต่ยังพรีเมียม","บรรยากาศเมืองทะเลเข้ากับคลินิก","ทุกอย่างดูไม่เร่ง และน่าจดจำ","แสงยามเย็นยกทั้งชุดขึ้น","สถานที่กับแบรนด์อยู่อุณหภูมิเดียวกัน","จังหวะภาพช้าพอที่จะจำรายละเอียด","ระยองให้คลินิกมีลักษณะของที่","ความละมุนไม่ทำให้ภาพหลุด","บรรยากาศนี้เล่าได้โดยไม่ต้องอธิบายมาก"],
-    future: ["อยากเห็นซานต้ากับ SeoulSocietyClinic ทำต่อ","ความร่วมมือนี้ยังไปได้และน่าติดตาม","ถ้ามีตอนต่อไป รออยู่แล้ว","อย่าให้จบแค่ระยอง","หวังว่าจะได้เห็นทั้งคู่อีกครั้ง","บทต่อไปควรคงโทนนี้ไว้","มีพื้นที่ให้เล่าอีกเยอะ","ความต่อเนื่องจะดูสมเหตุสมผล","ยังไม่ควรปิดที่แคมเปญเดียว","โปรเจกต์ถัดไปถ้ายังเป็นคู่นี้จะน่าดู"]
-  },
-  ja: {
-    santa: ["サンタがいるだけで空気がやわらかくなる","作り込みすぎないサンタの佇まいがちょうどいい","サンタの落ち着いた表情が軸になっている","無理に笑わせないところが残る","サンタの静かな存在感が企画を支えている","サンタがこの場を身近にしている","画面の温度はサンタが決めている","力みのないサンタが信頼を作る","サンタの柔らかな自信が似合う","サンタ一人で物語の中心が定まる"],
-    collab: ["サンタとSeoulSocietyClinicの組み合わせは筋が通っている","クリニックとサンタの距離感が押しつけがましくない","この協業は顔と世界観が同じ方向を向いている","SeoulSocietyClinicがサンタを選んだ理由が読める","サンタとクリニックの並びは記憶に残りやすい","どちらも残って、どちらも勝ちすぎない","意図のある組み合わせに見える","二人の名前が一つの温度になっている","競わずに補い合っている","キャンペーンの中心がこの協業で明確になる"],
-    product: ["製品の主張が強くなく、結果は見える","肌のトーンがきれいで話として成立している","SeoulSocietyClinicの製品がこの光の中で素直に見える","盛りすぎない質感なのに印象は残る","仕上がりがフィルターっぽくない","テクスチャが清潔で負担が少ない","見せ方が丁寧で信用につながる","光沢はあるが厚くない","製品と肌の物語が一致している","静かな上質さが製品側にある"],
-    vibe: ["ラヨーンの光がキャンペーンを開いてくれる","海辺の余裕とクリニックの端正さが同居している","急がない空気が今回の魅力だ","夕方の色が協業の温度を決めている","場所の選び方が上手く、ムードが散らない","光と人と同じ方向を向いている","遅いリズムが細部を残す","ラヨーンがブランドに輪郭を足している","美しさだけで終わらない空気がある","説明する前に雰囲気が伝わる"],
-    future: ["サンタとSeoulSocietyClinicの続きが見たい","今回だけで終わらせるには惜しい","次の都市でもこの組み合わせを見てみたい","もう一段階進んだ協業があっていい","この先も同じ温度で続いてほしい","ラヨーンの次が自然に想像できる","繰り返しではなく広がりになってほしい","次作もこのトーンなら十分だ","関心はすでに次回へ向いている","一回で閉じる企画ではない"]
-  },
-  zh: {
-    santa: ["Santa在这个场景里很松弛，内容也跟着顺","Santa没有用力表演，自然反而站得住","镜头里的Santa很安静，存在感刚好","Santa把这次合作的温度定清楚了","Santa出现在这里，人选是对的","Santa让这支内容更接近人","不夸张的自信是Santa这里最好的部分","Santa把精致的布置变得可亲近","画面的中心因为Santa而稳定","Santa的从容是这支campaign的底"],
-    collab: ["Santa和SeoulSocietyClinic的搭配像是想过的","这次合作不吵，两边气质对得上","SeoulSocietyClinic找Santa，画面是成立的","人和品牌没有互相抢","这个组合有干净的说服力","选择的理由能从画面里读出来","两边都在，而且都不过头","Santa与SeoulSocietyClinic共享一个温度","这不是硬拼的名字，是对齐的方向","合作让campaign有了明确中心"],
-    product: ["产品呈现得很克制，效果却看得见","肤质看起来干净，不像只靠后期","SeoulSocietyClinic把产品语气放得很稳","光泽有，但不厚","这种完成度会让人多看产品一眼","展示方式小心，所以可信","质地干净，想象中的使用也不负担","成品仍像真实的皮肤","产品和皮肤说的是同一件事","安静的精致感在产品这边"],
-    vibe: ["罗勇的光线把整支campaign打开了","海边的松和诊所的整齐放在一起很顺","节奏很慢，慢得刚刚好","傍晚的颜色让合作多了一层记忆点","地点选得准，氛围没有散","光线、地点和人都在同一个方向","慢节奏把细节留下来了","罗勇给品牌加了一层具体的性格","氛围漂亮，但没有只剩氛围","不用多解释，气温已经对了"],
-    future: ["希望Santa和SeoulSocietyClinic还有下一章","这次不该是最后一次合作","如果之后换一座城市，也会看","这个组合还有可以继续长的空间","下一轮如果还是他们，会留下来","罗勇之后的延续很自然","希望是延伸，不是重复","下一支保持这个温度就够","注意力已经在下一次了","一次campaign关不住这个搭配"]
-  },
-  es: {
-    santa: ["Santa aporta una calma que hace la pieza mas natural","Hay una presencia sencilla en Santa que encaja","Santa no fuerza la escena, y por eso funciona","La forma en que Santa ocupa el encuadre le da tono","Santa vuelve cercana una colaboracion que podia ser distante","La confianza suave de Santa sostiene el relato","Santa pone un rostro creible en el centro","Sin exceso, Santa deja una impresion clara","La calma de Santa es el eje de esta campana","Santa hace que el cuidado se sienta personal"],
-    collab: ["Santa y SeoulSocietyClinic se leen como una decision","La colaboracion tiene pulso propio y no se pisan","SeoulSocietyClinic encontro en Santa un rostro coherente","Esta union se siente medida y facil de recordar","Santa con SeoulSocietyClinic deja una impresion limpia","Los dos nombres comparten temperatura","La eleccion se entiende mirando la imagen","Ninguno tapa al otro","El centro de la campana queda mas claro","Hay intencion en como se juntan"],
-    product: ["El resultado en la piel se ve cuidado, no retocado de mas","Los productos se entienden sin explicarlo todo","Hay un acabado suave que hace creible a la clinica","SeoulSocietyClinic presenta el producto con precision","La textura se ve limpia y el conjunto no cansa","El brillo existe, pero no pesa","La piel sigue pareciendo piel","El relato del producto y el de la piel coinciden","La contencion hace mas convincente el resultado","Hay una elegancia quieta en como se muestran"],
-    vibe: ["Rayong le da aire a la campana y el ritmo mejora","El ambiente es costero, calido y todavia preciso","Nada aqui parece apurado","La luz de la tarde sostiene el relato","El lugar y la clinica comparten temperatura","La eleccion del sitio le da caracter","El ritmo lento deja ver el detalle","Rayong abre la pieza sin desordenarla","La atmosfera no se queda solo en lo bonito","Se entiende el tono antes de leer nada"],
-    future: ["Ojala Santa y SeoulSocietyClinic continuen despues de Rayong","Esta colaboracion tiene material para otro capitulo","Me quedo esperando la siguiente entrega","No deberia cerrarse en una sola campana","Hay sitio para verlos juntos otra vez","La continuacion puede guardar este tono","Rayong deja una puerta abierta","Interesa mas la extension que la repeticion","La atencion ya esta en lo que sigue","Una segunda pieza estaria justificada"]
-  },
-  fr: {
-    santa: ["Santa apporte un calme qui rend la sequence plus juste","La presence de Santa est simple, et cela tient","Santa n'en fait pas trop, et la campagne y gagne","Le visage de Santa donne tout de suite le ton","Santa rend cette collaboration plus proche","Une assurance douce porte l'image","Santa pose un centre credible","Sans effort visible, l'impression reste nette","Le calme de Santa structure l'ensemble","Santa rend le soin plus personnel"],
-    collab: ["Santa et SeoulSocietyClinic avancent dans la meme direction","Le choix de Santa par la clinique se comprend a l'image","Cette collaboration est nette, sans effet force","Les deux parties se completent sans se couvrir","Santa avec SeoulSocietyClinic laisse une impression precise","Les deux noms partagent une temperature","L'intention de l'association se lit","Personne ne prend toute la place","Le centre de la campagne devient clair","L'accord est mesure, pas decoratif"],
-    product: ["Le rendu de peau reste credible, et les produits en profitent","On voit le soin sans qu'on ait besoin de le crier","SeoulSocietyClinic montre un fini doux et tenu","La texture est propre, le resultat se lit vite","Peu de brillance inutile, beaucoup de tenue","La peau reste une peau","Le recit du produit rejoint celui du visage","La retenue rend le resultat plus solide","La presentation est soignee sans etre froide","Il y a un luxe calme du cote des produits"],
-    vibe: ["Rayong ouvre la campagne et lui donne de l'air","L'ambiance est cotiere, posee, encore tres nette","Rien ne presse, et c'est ce qui reste","La lumiere du soir porte le recit","Le lieu et la clinique partagent la meme temperature","Le choix du site donne un contour","Le rythme lent garde les details","Rayong ajoute du caractere sans disperser","L'atmosphere ne se limite pas au decor","Le ton se comprend avant les mots"],
-    future: ["J'aimerais revoir Santa et SeoulSocietyClinic plus loin","Cette collaboration merite une suite","Rayong ne devrait pas etre le dernier chapitre","Le prochain projet peut garder ce ton","Il y a encore de la place pour les voir ensemble","La suite peut etre une extension, pas une copie","L'attention est deja sur la prochaine etape","Une deuxieme piece serait justifiee","Le meme duo dans une autre ville aurait du sens","Ce n'est pas une campagne a refermer trop vite"]
-  },
-  id: {
-    santa: ["Santa membuat suasana ini lebih tenang dan tidak dibuat-buat","Kehadiran Santa pas dengan nada kampanye","Santa tidak perlu berlebih, gambarnya sudah bicara","Ada ketenangan di Santa yang mengunci rangkaian ini","Santa memberi kampanye ini wajah yang mudah diingat","Kepercayaan yang lembut terbaca dari Santa","Santa membuat cerita ini terasa lebih dekat","Percaya diri yang tidak keras adalah daya tariknya","Santa menempatkan pusat gambar dengan tepat","Kesan Santa di sini jujur dan rapi"],
-    collab: ["Santa dan SeoulSocietyClinic terasa selaras","Kolaborasi ini punya alasan yang terbaca dari visualnya","SeoulSocietyClinic memilih Santa di titik yang tepat","Keduanya tidak saling menimpa","Santa bersama SeoulSocietyClinic meninggalkan kesan bersih","Dua nama ini berbagi suhu yang sama","Pasangannya terasa dipertimbangkan","Tidak ada yang berebut menjadi pusat sendirian","Kolaborasi ini memperjelas kampanye","Ini bukan sekadar menyandingkan nama"],
-    product: ["Hasil di kulit terlihat rapi tanpa kesan terlalu diolah","Produknya tampil pelan, tetapi hasilnya kebaca","SeoulSocietyClinic menunjukkan tekstur yang mudah dipercaya","Cahayanya ada, namun tidak berat","Penyelesaiannya membuat produk terasa konkret","Kulitnya masih terlihat seperti kulit","Cerita produk dan cerita kulit sejalan","Cara menampilkannya hati-hati, jadi meyakinkan","Ada kemewahan yang tenang di sisi produk","Tekstur bersih dan tidak membebani"],
-    vibe: ["Rayong memberi napas pada seluruh kampanye","Suasananya pantai, hangat, tetapi tetap terkontrol","Tidak ada yang terburu-buru","Cahaya sore menahan mood tetap utuh","Tempat dan klinik berada di suhu yang sama","Pilihan lokasi memberi karakter","Ritme yang pelan menyimpan detail","Rayong membuka gambar tanpa membuatnya buyar","Suasananya indah, tetapi tidak hanya dekorasi","Nada kampanye terasa sebelum dijelaskan"],
-    future: ["Semoga Santa dan SeoulSocietyClinic masih ada lanjutannya","Kolaborasi ini sayang jika berhenti di Rayong","Saya menunggu bab berikutnya","Masih ada ruang untuk mereka bekerja lagi","Kalau ada edisi berikut, saya akan melihatnya","Lanjutan sebaiknya menjaga suhu ini","Ini lebih pantas menjadi perluasan, bukan pengulangan","Perhatian sudah menuju proyek berikutnya","Duo yang sama di kota lain akan masuk akal","Satu kampanye belum cukup untuk menutupnya"]
-  },
-  de: {
-    santa: ["Santa gibt der Szene eine Ruhe, die sich nicht gestellt anfuehlt","Die Praesenz von Santa traegt diese Kampagne ohne Aufwand","Santa muss wenig tun, und dadurch bleibt es glaubwuerdig","Der Ton von Santa passt zu diesem Setting","Santa macht die Zusammenarbeit naehbar","Eine leise Sicherheit haelt das Bild","Santa setzt ein vertrauenswuerdiges Zentrum","Ohne sichtbare Anstrengung bleibt der Eindruck klar","Die Ruhe von Santa strukturiert die Kampagne","Santa macht Pflege persoenlicher"],
-    collab: ["Santa und SeoulSocietyClinic wirken wie eine bewusste Entscheidung","Die Klinik und Santa ziehen in dieselbe Richtung","Die Zusammenarbeit ist praezise, nicht erzwungen","Beide bleiben sichtbar, keiner deckt den anderen zu","Santa mit SeoulSocietyClinic hinterlaesst einen sauberen Eindruck","Die beiden Namen teilen eine Temperatur","Die Wahl erklaert sich im Bild","Das Zentrum der Kampagne wird dadurch klarer","Es ist eine Abstimmung, kein Dekor","Der Rhythmus zwischen beiden stimmt"],
-    product: ["Das Hautbild wirkt gepflegt und nicht ueberarbeitet","Die Produkte erklaeren sich, ohne laut zu werden","SeoulSocietyClinic zeigt ein weiches, gehaltenes Finish","Die Textur ist sauber und schnell lesbar","Glanz ist da, aber er liegt nicht schwer","Haut bleibt Haut","Produktgeschichte und Hautgeschichte passen zusammen","Zurueckhaltung macht das Ergebnis glaubwuerdiger","Die Praesentation ist sorgfaeltig ohne Kaelte","Auf der Produktseite liegt eine ruhige Qualitaet"],
-    vibe: ["Rayong gibt der Kampagne Luft und Licht","Die Stimmung ist kuestennah, warm und trotzdem praezise","Nichts wirkt gehetzt","Das Abendlicht traegt den ganzen Ton","Ort und Klinik teilen dieselbe Temperatur","Die Ortswahl gibt der Marke Kontur","Das langsame Tempo behaelt die Details","Rayong oeffnet das Bild, ohne es zu zerstreuen","Die Atmosphaere ist mehr als Kulisse","Der Ton ist verstaendlich, bevor man ihn erklaert"],
-    future: ["Santa und SeoulSocietyClinic duerfen nach Rayong weitergehen","Diese Zusammenarbeit hat Stoff fuer ein weiteres Kapitel","Die naechste Lieferung ist schon interessant","Es sollte nicht bei einer Kampagne bleiben","Dieselbe Paarung in einer anderen Stadt waere stimmig","Die Fortsetzung kann diesen Ton behalten","Eher Erweiterung als Wiederholung","Die Aufmerksamkeit liegt schon beim Naechsten","Ein zweites Kapitel waere begruendet","Rayong sollte nicht der letzte Schnittpunkt sein"]
-  },
-  pt: {
-    santa: ["Santa traz uma calma que deixa a peca mais natural","A presenca de Santa e simples e encaixa neste momento","Santa nao forca a cena, e por isso funciona","O rosto de Santa define o tom logo de inicio","Santa aproxima uma colaboracao que podia parecer distante","Uma confianca suave sustenta a imagem","Santa coloca um centro crivel na campanha","Sem excesso, a impressao fica clara","A calma de Santa organiza o conjunto","Santa torna o cuidado mais pessoal"],
-    collab: ["Santa e SeoulSocietyClinic parecem uma escolha pensada","A colaboracao tem ritmo proprio e ninguem se cobre","SeoulSocietyClinic encontrou em Santa um rosto coerente","Esta uniao e medida e facil de lembrar","Santa com SeoulSocietyClinic deixa uma impressao limpa","Os dois nomes dividem a mesma temperatura","A razao da escolha se le na imagem","O centro da campanha fica mais claro","Nao e apenas juntar nomes","Os dois avancam na mesma direcao"],
-    product: ["O resultado na pele parece cuidado, nao retocado demais","Os produtos se entendem sem precisar gritar","Ha um acabamento suave que torna a clinica crivel","SeoulSocietyClinic apresenta o produto com precisao","A textura esta limpa e o conjunto nao cansa","O brilho existe, mas nao pesa","A pele continua parecendo pele","A historia do produto encontra a da pele","A contencao deixa o resultado mais solido","Ha uma elegancia quieta na forma de mostrar"],
-    vibe: ["Rayong da ar a campanha e melhora o ritmo","O ambiente e costeiro, quente e ainda preciso","Nada aqui parece apressado","A luz da tarde sustenta o relato","O lugar e a clinica compartilham temperatura","A escolha do sitio da contorno a marca","O ritmo lento guarda os detalhes","Rayong abre a peca sem dispersa-la","A atmosfera nao fica so no cenario","O tom se entende antes das palavras"],
-    future: ["Tomara que Santa e SeoulSocietyClinic continuem depois de Rayong","Esta colaboracao tem materia para outro capitulo","Fico esperando a proxima entrega","Nao deveria fechar em uma so campanha","Ha espaco para ve-los juntos de novo","A continuacao pode guardar este tom","Rayong deixa a porta aberta","Interessa mais a extensao do que a repeticao","A atencao ja esta no que vem depois","Uma segunda peca seria justificada"]
-  }
-};
-const langs = Object.keys(cores);
-const themes = ["santa", "collab", "product", "vibe", "future"];
-const pool = [];
-langs.forEach(lang => {
-  themes.forEach(theme => {
-    cores[lang][theme].forEach(line => {
-      tails[lang].forEach(tail => pool.push(line + tail));
-    });
-  });
-});
-let order = pool.map((_, i) => i);
-let cursor = 0;
-let copied = 0;
-let current = "";
-const countEl = document.getElementById("count");
-const poolEl = document.getElementById("pool");
-const preview = document.getElementById("preview");
-const postBtn = document.getElementById("post");
-const toast = document.getElementById("toast");
-poolEl.textContent = "Pool: " + pool.length + " comments";
-function shuffle(list) {
-  for (let i = list.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const tmp = list[i];
-    list[i] = list[j];
-    list[j] = tmp;
-  }
-}
-shuffle(order);
-function showToast(text) {
-  toast.textContent = text;
-  toast.classList.add("show");
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
-}
-function build(body) {
-  return body + "\nSANTA SEOULCIETY AT RAYONG\n\n#SeoulSocietyClinicxSanta\n#Santapp";
-}
-async function generate() {
-  if (cursor >= order.length) {
-    shuffle(order);
-    cursor = 0;
-  }
-  current = build(pool[order[cursor++]]);
-  preview.textContent = current;
-  preview.classList.remove("empty");
-  postBtn.disabled = false;
-  try {
-    await navigator.clipboard.writeText(current);
-    copied += 1;
-    countEl.textContent = "Copied: " + copied + " comments";
-    showToast("Copied");
-  } catch (err) {
-    showToast("Copy failed. Select the text manually.");
-  }
-}
-document.getElementById("generate").addEventListener("click", generate);
-postBtn.addEventListener("click", () => {
-  if (!current) return;
-  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
-});
-document.addEventListener("keydown", (event) => {
-  if (event.code !== "Space") return;
-  const tag = document.activeElement && document.activeElement.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA") return;
-  event.preventDefault();
-  generate();
-});
-</script>
 </body>
 </html>
