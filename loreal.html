@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>X Comment Generator · L'Oreal Cloud Stick x Santa</title>
 <style>
   :root { --bg:#f4f7fb; --paper:#fffdfb; --ink:#1c2430; --muted:#6c7582; --line:#dce3ee; --accent:#1a1a1a; --accent-dark:#000; --gold:#c4a574; --chip:#eef3f8; }
@@ -10,12 +10,13 @@
   body { margin:0; min-height:100vh; font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--ink); }
   .wrap { max-width:760px; margin:0 auto; padding:32px 18px 56px; }
   h1 { margin:0 0 8px; font-size:28px; font-weight:600; letter-spacing:-0.03em; }
+  .sub { margin:0; color:var(--muted); line-height:1.5; font-size:15px; }
   .notice { margin-top:14px; padding:10px 12px; background:var(--chip); border-left:3px solid var(--gold); color:#3e4654; font-size:14px; }
   .stats { display:flex; justify-content:space-between; gap:12px; margin:22px 0 16px; font-size:15px; }
   .count { font-weight:600; } .pool { color:var(--muted); }
   .preview { min-height:220px; background:var(--paper); border:1px solid var(--line); padding:16px; white-space:pre-wrap; line-height:1.55; font-size:15px; }
   .preview.empty { color:var(--muted); }
-  .actions { display:flex; gap:8px; margin-top:12px; }
+  .actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
   button { appearance:none; border:0; cursor:pointer; font:inherit; font-size:13px; padding:6px 10px; min-height:32px; }
   .primary { background:var(--accent); color:#fff; } .primary:hover { background:var(--accent-dark); }
   .secondary { background:transparent; color:var(--ink); border:1px solid var(--ink); }
@@ -28,9 +29,13 @@
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
+      <p class="sub">English only. Short comments.</p>
       <div class="notice">Press Space to Generate and Copy. Live starts 12:00. Do not use the keyword or hashtag before then.</div>
     </header>
-    <div class="stats"><div class="count" id="count">Copied: 0 comments</div><div class="pool" id="pool"></div></div>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
     <div class="preview empty" id="preview">Your comment will appear here.</div>
     <div class="actions">
       <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
@@ -39,55 +44,112 @@
   </div>
   <div class="toast" id="toast"></div>
 <script>
-const who = ["Santa","Santa on the noon live","Santa with the stick in hand","Santa at the TikTok shop","Santa for L'Oreal"];
-const item = ["Cloud Skin Sun Stick","UV Defender Cloud Skin","the L'Oreal sun stick","UV Defender","Cloud Skin"];
-const act = ["swipes","wears","explains","reapplies","holds","shows","lets","keeps","names","treats"];
-const see = ["no white cast","a sheer cloud layer","skin that still looks like skin","a glide that doesn’t lift makeup","SPF 50 without chalk","a pocket-size habit","an even cheek","texture still visible","no grease on camera","a finish that settles"];
-const tail = ["The live doesn’t lecture.","Noon light is honest enough.","The label stays in frame.","Shop link, face still readable.","One swipe is enough to check.","He doesn’t perform the claim.","Useful at real size.","The hour stays tight.","Ring light doesn’t wash him out.","A bag product, shown like one."];
-const forms = [
-  (i) => ${who[i%5]} ${act[i%10]} ${item[(i*3)%5]} like a routine step. ${see[(i*4)%10]}.,
-  (i) => ${item[i%5]} looks believable on Santa because of ${see[(i*2)%10]}. ${tail[i%10]},
-  (i) => L'Oreal’s ${item[(i*2)%5]} gets a calm host in Santa. ${see[i%10]} does the convincing.,
-  (i) => On the noon live, Santa lets ${item[i%5]} finish the line. ${tail[(i*3)%10]},
-  (i) => ${see[(i*5)%10]} is the Cloud Skin point, and Santa doesn’t talk over it.,
-  (i) => Santa keeps ${item[(i*4)%5]} in hand longer than the slogan. ${see[(i*3)%10]}.,
-  (i) => What the TikTok frame catches is Santa, then ${item[i%5]}, then ${see[(i*6)%10]}.,
-  (i) => ${item[(i*3)%5]} stays the subject. Santa just wears the result. ${tail[(i*4)%10]},
-  (i) => A sun stick demo usually stiffens. Santa and ${item[i%5]} keep it ordinary. ${see[(i*7)%10]}.,
-  (i) => UV Defender as ${item[(i*2)%5]} finally has Santa’s pace. ${tail[(i*5)%10]},
-  (i) => Santa’s cheek confirms ${item[i%5]}: ${see[(i*2)%10]}.,
-  (i) => L'Oreal Paris, Santa, ${item[(i*5)%5]}. ${see[i%10]}, ${tail[(i*2)%10].toLowerCase()}
+const openings = [
+  "Santa makes the noon live feel closer than a product drop.",
+  "Cloud Skin sits light on camera, with no chalky edge.",
+  "UV Defender as a stick finally has a face that does not oversell it.",
+  "The swipe looks easy and the cast stays clear.",
+  "SPF talk usually stiffens a frame. Santa keeps it ordinary.",
+  "A pocket sun stick, explained without a lecture.",
+  "L'Oreal gets the formula. Santa gets the temperature right.",
+  "Noon light is honest. The finish still reads even.",
+  "No white film on the cheek. That is the useful part.",
+  "He treats the stick like a habit, not a prop.",
+  "Cloud finish, quiet voice, shop link kept in the corner.",
+  "Reapplying over makeup looks possible from the glide.",
+  "The tube is small. The explanation stays smaller.",
+  "Santa's skin does the convincing before the claim does.",
+  "UV Defender needed a soft launch face. This fits.",
+  "The live does not rush the swipe.",
+  "A sun stick for a bag, shown like one.",
+  "Clear layer, calm host, no leftover shine speech.",
+  "Cloud Skin sounds airy. On him it actually looks airy.",
+  "He does not cover the label with his hand.",
+  "SPF 50, said once, then shown.",
+  "The stick moves clean across the cheekbone.",
+  "L'Oreal Paris usually goes polished. Santa pulls it nearer.",
+  "No cast under the ring light. Useful detail.",
+  "Santa lets the cloud layer sit before he speaks again."
 ];
-const comments = [];
-const seen = new Set();
-for (let n = 0; comments.length < 2000 && n < 8000; n++) {
-  const line = forms[n % forms.length](n);
-  if (seen.has(line)) continue;
-  seen.add(line);
-  comments.push(line);
-}
-let order = comments.map((_, i) => i);
+const middles = [
+  "The layer disappears into the light.",
+  "No grease left on camera.",
+  "Makeup underneath stays put.",
+  "Pores remain visible. That is the cloud trick.",
+  "The second pass still looks sheer.",
+  "Defense in a small format, shown at real size.",
+  "He names the finish, then lets the cheek confirm it.",
+  "The product leaves the shot looking used.",
+  "A clear result without a fogged lens.",
+  "The cheek stays readable after the swipe."
+];
+const closers = [
+  "The live can stay on this tempo.",
+  "A later clip in the same mood would fit.",
+  "Worth staying for the next swipe.",
+  "The balance is the part that lands.",
+  "This hour earns another look.",
+  "Saving the rest of the attention for what follows.",
+  "Quiet is doing the work.",
+  "Done without piling on claims."
+];
+const pool = [];
+openings.forEach(function (o) {
+  middles.forEach(function (m) {
+    closers.forEach(function (c) { pool.push(o + " " + m + " " + c); });
+  });
+});
+let order = pool.map(function (_, i) { return i; });
 let cursor = 0, copied = 0, current = "";
 const countEl = document.getElementById("count");
 const poolEl = document.getElementById("pool");
 const preview = document.getElementById("preview");
 const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
-poolEl.textContent = "Pool: " + comments.length + " comments";
-function shuffle(list) { for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = list[i]; list[i] = list[j]; list[j] = t; } }
+poolEl.textContent = "Pool: " + pool.length + " comments";
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = list[i]; list[i] = list[j]; list[j] = tmp;
+  }
+}
 shuffle(order);
-function showToast(text) { toast.textContent = text; toast.classList.add("show"); clearTimeout(showToast._t); showToast._t = setTimeout(() => toast.classList.remove("show"), 1400); }
-function build(body) { return body + "\n\nSANTA CLOUD SKIN SUNSTICK\n\n#LOrealCloudStickxSanta"; }
+function showToast(text) {
+  toast.textContent = text; toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(function () { toast.classList.remove("show"); }, 1400);
+}
+function build(body) {
+  return body + "\n\nSANTA CLOUD SKIN SUNSTICK\n\n#LOrealCloudStickxSanta";
+}
 async function generate() {
   if (cursor >= order.length) { shuffle(order); cursor = 0; }
-  current = build(comments[order[cursor++]]);
-  preview.textContent = current; preview.classList.remove("empty"); postBtn.disabled = false;
-  try { await navigator.clipboard.writeText(current); copied++; countEl.textContent = "Copied: " + copied + " comments"; showToast("Copied"); }
-  catch (e) { showToast("Copy failed. Select the text manually."); }
+  current = build(pool[order[cursor++]]);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
 }
 document.getElementById("generate").addEventListener("click", generate);
-postBtn.addEventListener("click", async () => { await generate(); if (current) window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener"); });
-document.addEventListener("keydown", (e) => { if (e.code !== "Space") return; const tag = document.activeElement && document.activeElement.tagName; if (tag === "INPUT" || tag === "TEXTAREA") return; e.preventDefault(); generate(); });
+postBtn.addEventListener("click", async function () {
+  await generate();
+  if (!current) return;
+  window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", function (event) {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  event.preventDefault();
+  generate();
+});
 </script>
 </body>
 </html>
