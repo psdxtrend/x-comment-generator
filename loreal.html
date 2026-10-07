@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>X Comment Generator · L'Oreal Cloud Stick x Santa</title>
+<style>
+  :root { --bg:#f4f7fb; --paper:#fffdfb; --ink:#1c2430; --muted:#6c7582; --line:#dce3ee; --accent:#1a1a1a; --accent-dark:#000; --gold:#c4a574; --chip:#eef3f8; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--ink); }
+  .wrap { max-width:760px; margin:0 auto; padding:32px 18px 56px; }
+  h1 { margin:0 0 8px; font-size:28px; font-weight:600; letter-spacing:-0.03em; }
+  .notice { margin-top:14px; padding:10px 12px; background:var(--chip); border-left:3px solid var(--gold); color:#3e4654; font-size:14px; }
+  .stats { display:flex; justify-content:space-between; gap:12px; margin:22px 0 16px; font-size:15px; }
+  .count { font-weight:600; } .pool { color:var(--muted); }
+  .preview { min-height:220px; background:var(--paper); border:1px solid var(--line); padding:16px; white-space:pre-wrap; line-height:1.55; font-size:15px; }
+  .preview.empty { color:var(--muted); }
+  .actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  button { appearance:none; border:0; cursor:pointer; font:inherit; font-size:13px; padding:6px 10px; min-height:32px; }
+  .primary { background:var(--accent); color:#fff; } .primary:hover { background:var(--accent-dark); }
+  .secondary { background:transparent; color:var(--ink); border:1px solid var(--ink); }
+  .secondary:hover { background:#e8eef6; } .secondary:disabled { opacity:.45; cursor:not-allowed; }
+  .toast { position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(12px); background:var(--ink); color:#fff; padding:10px 14px; font-size:14px; opacity:0; pointer-events:none; transition:.2s ease; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <div class="notice">Press Space to Generate and Copy. Live starts 12:00. Do not use the keyword or hashtag before then.</div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Space</button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+<script>
+const A = [
+  "Santa makes the noon live feel closer than a product drop.","Cloud Skin sits light on camera, with no chalky edge.","UV Defender as a stick finally has a face that doesn’t oversell it.","The swipe looks easy and the cast stays clear.","SPF talk usually stiffens a frame. Santa keeps it ordinary.","A pocket sun stick, explained without a lecture.","L'Oreal gets the formula. Santa gets the temperature right.","Noon light is honest. The finish still reads even.","No white film on the cheek. That is the useful part.","He treats the stick like a habit, not a prop.","Cloud finish, quiet voice, shop link kept in the corner.","Reapplying over makeup looks possible from the glide.","The tube is small. The explanation stays smaller.","Santa’s skin does the convincing before the claim does.","UV Defender needed a soft launch face. This fits.","The live doesn’t rush the swipe.","A sun stick for a bag, shown like one.","Clear layer, calm host, no leftover shine speech.","Cloud Skin sounds airy. On him it actually looks airy.","He doesn’t cover the label with his hand.","SPF 50, said once, then shown.","The stick moves clean across the cheekbone.","L'Oreal Paris usually goes polished. Santa pulls it nearer.","No cast under the ring light. Useful detail.","Favorite sun stick reads true because he doesn’t perform the line.","Pocket size suits a live better than a bottle demo.","The finish blurs without turning flat.","Santa lets the cloud layer sit before he speaks again.","A noon slot for sunscreen makes more sense than an evening one.","He keeps the tone low. The stick stays visible.","UV protection explained like a routine step.","The glide doesn’t lift whatever is already on the skin.","Cloud Skin, Santa, one hour. Tight enough.","The camera catches texture. The stick doesn’t erase it.","L'Oreal gets a host who can hold still.","Santa’s pace matches a stick you would actually reapply."
+];
+const B = [
+  "The layer disappears into the light.","No grease left on camera.","Makeup underneath stays put.","Pores remain visible. That is the cloud trick.","The second pass still looks sheer.","Defense in a small format, shown at real size.","He names the finish, then lets the cheek confirm it.","The product leaves the shot looking used.","A clear result without a fogged lens.","The cheek stays readable after the swipe.","Protection that doesn’t announce itself.","Noon brightness doesn’t wash him out."
+];
+const C = [
+  "The live can stay on this tempo.","A later clip in the same mood would fit.","Worth staying for the next swipe.","The balance is the part that lands.","This hour earns another look.","Saving the rest of the attention for what follows.","Quiet is doing the work.","Done without piling on claims."
+];
+const comments = [];
+const seen = new Set();
+for (let i = 0; i < A.length && comments.length < 2000; i++) {
+  for (let j = 0; j < B.length && comments.length < 2000; j++) {
+    for (let k = 0; k < C.length && comments.length < 2000; k++) {
+      const line = A[i] + " " + B[(i + j * 5) % B.length] + " " + C[(i + k * 3) % C.length];
+      if (seen.has(line)) continue;
+      seen.add(line);
+      comments.push(line);
+    }
+  }
+}
+let order = comments.map((_, i) => i);
+let cursor = 0, copied = 0, current = "";
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+poolEl.textContent = "Pool: " + comments.length + " comments";
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = list[i]; list[i] = list[j]; list[j] = tmp;
+  }
+}
+shuffle(order);
+function showToast(text) {
+  toast.textContent = text; toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+function build(body) { return body + "\n\nSANTA CLOUD SKIN SUNSTICK\n\n#LOrealCloudStickxSanta"; }
+async function generate() {
+  if (cursor >= order.length) { shuffle(order); cursor = 0; }
+  current = build(comments[order[cursor++]]);
+  preview.textContent = current; preview.classList.remove("empty"); postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1; countEl.textContent = "Copied: " + copied + " comments"; showToast("Copied");
+  } catch (err) { showToast("Copy failed. Select the text manually."); }
+}
+document.getElementById("generate").addEventListener("click", generate);
+postBtn.addEventListener("click", async () => { await generate(); if (!current) return; window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener"); });
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  event.preventDefault(); generate();
+});
+</script>
+</body>
+
+</html>
