@@ -39,33 +39,61 @@
   </div>
   <div class="toast" id="toast"></div>
 <script>
-const who = ["Santa","Santa on the noon live","Santa with the sun stick in hand","Santa at the L'Oreal TikTok shop","Santa for Cloud Skin"];
-const item = ["Cloud Skin Sun Stick","UV Defender Cloud Skin","the L'Oreal sun stick","UV Defender","Santa’s favorite sun stick"];
-const act = ["swipes","wears","explains","reapplies","holds","shows","names","keeps","treats","opens"];
-const see = ["no white cast","a sheer cloud layer","skin that still looks like skin","a glide that doesn’t lift makeup","SPF without chalk","a pocket-size habit","an even cheek on camera","texture still visible","no grease under the ring light","a finish that settles"];
-const tail = ["The live doesn’t lecture.","Noon light is honest enough.","The label stays in frame.","Shop link, face still readable.","One swipe is enough to check.","He doesn’t perform the claim.","Useful at real size.","The hour stays tight, 12 to 1.","A bag product, shown like one.","Polaroid energy stays secondary to the stick."];
-const forms = [
-  (i) => `${who[i%5]} ${act[i%10]} ${item[(i*3)%5]} like a routine step. ${see[(i*4)%10]}.`,
-  (i) => `${item[i%5]} looks believable on Santa because of ${see[(i*2)%10]}. ${tail[i%10]}`,
-  (i) => `L'Oreal’s ${item[(i*2)%5]} gets a calm host in Santa. ${see[i%10]} does the convincing.`,
-  (i) => `On the noon TikTok live, Santa lets ${item[i%5]} finish the line. ${tail[(i*3)%10]}`,
-  (i) => `${see[(i*5)%10]} is the Cloud Skin point, and Santa doesn’t talk over it.`,
-  (i) => `Santa keeps ${item[(i*4)%5]} in hand longer than the slogan. ${see[(i*3)%10]}.`,
-  (i) => `What the TikTok frame catches is Santa, then ${item[i%5]}, then ${see[(i*6)%10]}.`,
-  (i) => `${item[(i*3)%5]} stays the subject. Santa just wears the result. ${tail[(i*4)%10]}`,
-  (i) => `A sun stick demo usually stiffens. Santa and ${item[i%5]} keep it ordinary. ${see[(i*7)%10]}.`,
-  (i) => `UV Defender as ${item[(i*2)%5]} finally has Santa’s pace. ${tail[(i*5)%10]}`,
-  (i) => `Santa’s cheek confirms ${item[i%5]}: ${see[(i*2)%10]}.`,
-  (i) => `L'Oreal Paris, Santa, ${item[(i*5)%5]}. ${see[i%10]}, ${tail[(i*2)%10].toLowerCase()}`
+const openings = [
+  "Santa looks calm with the Cloud Skin Sun Stick on the noon live.",
+  "This Santa and L'Oreal stop feels soft, not staged.",
+  "Cloud Skin with Santa has a clean rhythm.",
+  "The TikTok frame gives the stick air and Santa uses it well.",
+  "The pairing feels like care meeting a clear finish.",
+  "Santa keeps the sun stick ordinary instead of performing it.",
+  "Noon light and Santa make UV Defender easy to read.",
+  "L'Oreal's sun stick finally has Santa's pace.",
+  "Santa on the shop live lets the stick finish the line.",
+  "A pocket sun stick looks believable once Santa holds it.",
+  "Santa swipes Cloud Skin like a routine step, not a claim.",
+  "The live stays tight and Santa doesn't lecture the SPF.",
+  "UV Defender Cloud Skin sits in Santa's hand longer than the slogan.",
+  "Santa's cheek does the convincing for the sun stick.",
+  "L'Oreal Paris gets a calm host in Santa at noon.",
+  "The ring light stays honest and Santa doesn't cover it.",
+  "Santa treats the sun stick like a bag product, shown like one.",
+  "Cloud Skin on Santa reads as skin, not a filter.",
+  "The noon TikTok shop keeps Santa and the stick in the same frame.",
+  "Santa reappplies without turning it into a demo.",
+  "What the live catches is Santa, then the stick, then the finish.",
+  "Santa names UV Defender and lets the texture stay visible.",
+  "A sun stick demo usually stiffens. Santa keeps it ordinary.",
+  "L'Oreal's Cloud Skin has Santa's unhurried swipe.",
+  "Santa for Cloud Skin stays readable from 12 to 1."
+];
+const middles = [
+  "No white cast does the convincing.",
+  "The sheer cloud layer still looks like skin.",
+  "A glide that doesn't lift makeup is the point.",
+  "SPF without chalk stays easy to believe.",
+  "The finish settles and the face stays readable.",
+  "Texture still visible under the ring light.",
+  "No grease, just an even cheek on camera.",
+  "One swipe is enough to check the claim.",
+  "The label stays in frame without taking the face.",
+  "Useful at real size, not a staged close-up."
+];
+const closers = [
+  "The live doesn't lecture.",
+  "Noon light is honest enough.",
+  "He doesn't perform the claim.",
+  "Shop link, face still readable.",
+  "The hour stays tight, 12 to 1.",
+  "Polaroid energy stays secondary to the stick.",
+  "A bag product, shown like one.",
+  "Hoping the next frame keeps this quiet pace."
 ];
 const comments = [];
-const seen = new Set();
-for (let n = 0; comments.length < 2000 && n < 8000; n++) {
-  const line = forms[n % forms.length](n);
-  if (seen.has(line)) continue;
-  seen.add(line);
-  comments.push(line);
-}
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => comments.push(o + " " + m + " " + c));
+  });
+});
 let order = comments.map((_, i) => i);
 let cursor = 0, copied = 0, current = "";
 const countEl = document.getElementById("count");
