@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>X Comment Generator · Destiny Clinic x PerthSanta</title>
 <style>
   :root { --bg:#f4f7f3; --paper:#fffdfb; --ink:#243028; --muted:#6d776f; --line:#dce6dc; --accent:#3d6b52; --accent-dark:#2d5340; --gold:#c4a574; --chip:#eaf1eb; }
@@ -10,13 +10,12 @@
   body { margin:0; min-height:100vh; font-family:"Segoe UI","Helvetica Neue",Arial,sans-serif; background:var(--bg); color:var(--ink); }
   .wrap { max-width:760px; margin:0 auto; padding:32px 18px 56px; }
   h1 { margin:0 0 8px; font-size:28px; font-weight:600; letter-spacing:-0.03em; }
-  .sub { margin:0; color:var(--muted); line-height:1.5; font-size:15px; }
   .notice { margin-top:14px; padding:10px 12px; background:var(--chip); border-left:3px solid var(--gold); color:#3e4a41; font-size:14px; }
   .stats { display:flex; justify-content:space-between; gap:12px; margin:22px 0 16px; font-size:15px; }
   .count { font-weight:600; } .pool { color:var(--muted); }
   .preview { min-height:220px; background:var(--paper); border:1px solid var(--line); padding:16px; white-space:pre-wrap; line-height:1.55; font-size:15px; }
   .preview.empty { color:var(--muted); }
-  .actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .actions { display:flex; gap:8px; margin-top:12px; }
   button { appearance:none; border:0; cursor:pointer; font:inherit; font-size:13px; padding:6px 10px; min-height:32px; }
   .primary { background:var(--accent); color:#fff; } .primary:hover { background:var(--accent-dark); }
   .secondary { background:transparent; color:var(--ink); border:1px solid var(--ink); }
@@ -29,13 +28,9 @@
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
-      <p class="sub">English only. Short comments.</p>
       <div class="notice">Press Space to Generate and Copy. Trend start 17:45. Do not use the keyword or hashtag before then.</div>
     </header>
-    <div class="stats">
-      <div class="count" id="count">Copied: 0 comments</div>
-      <div class="pool" id="pool"></div>
-    </div>
+    <div class="stats"><div class="count" id="count">Copied: 0 comments</div><div class="pool" id="pool"></div></div>
     <div class="preview empty" id="preview">Your comment will appear here.</div>
     <div class="actions">
       <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
@@ -44,112 +39,55 @@
   </div>
   <div class="toast" id="toast"></div>
 <script>
-const openings = [
-  "Central Rama 2 settles once PerthSanta reach the Destiny Clinic corner.",
-  "Perth holds the still half while Santa warms the clinic frame.",
-  "Destiny Clinic looks less like a counter when both of them share it.",
-  "Rama 2 evening light sits kinder on their faces than the flash.",
-  "The bloom here reads as tended skin, not a backdrop slogan.",
-  "Santa leans toward the greeting. Perth keeps the aisle open.",
-  "A clinic stop rarely feels this unforced.",
-  "Their black-and-white contrast stays clean against the floral trim.",
-  "Mall noise stays outside the shot.",
-  "PerthSanta leave the treatment story visible.",
-  "The booth gets a human scale from the pair.",
-  "Santa's ease pulls the corner nearer.",
-  "Perth does not push the glow. He just stands in it.",
-  "Rama 2 gives them room, and they use the room.",
-  "Looked-after faces, ordinary warmth. That mix works.",
-  "The pairing feels like care beside chemistry.",
-  "No one rushes the first hello.",
-  "Skin detail survives the crowd.",
-  "Destiny Clinic chose faces that do not outshine the result.",
-  "Evening at the clinic suits their pace.",
-  "Both stay long enough for the finish to register.",
-  "The floral set never takes the shot.",
-  "Santa smiles without shoving the program forward.",
-  "Central Rama 2 suddenly has a center.",
-  "They share one temperature. The booth follows."
+const who = ["PerthSanta","Perth and Santa","Santa beside Perth","Perth next to Santa","the PerthSanta pair","Santa with Perth"];
+const brand = ["Destiny Clinic","the Destiny Clinic stage","Destiny Clinic at Central Rama 2","the Destiny Clinic booth","Destiny Clinic’s skincare stop"];
+const act = ["open","steady","warm","hold","share","anchor","brighten","settle","carry","frame"];
+const see = ["a tended glow","even skin under mall light","a calm treatment story","looked-after faces","soft clinic color behind black and white","no stiff pose","a readable skincare result","the floral set staying behind them","front-row light that still looks kind","care that doesn’t turn into a pitch"];
+const tail = ["Rama 2 can hold the evening slot.","Fans get the pair and the clinic in one stop.","The mall noise stays outside the frame.","Another pass would still fit.","Black and white against the clinic palette works.","They don’t chase the crowd.","The hour earns the stop.","VIP seats only make the same point closer.","Packages sit beside them, not over them.","October 8 is the pair’s night here."];
+const forms = [
+  (i) => `${who[i%6]} ${act[i%10]} ${brand[(i*3)%5]}, and ${see[(i*5)%10]} does the rest.`,
+  (i) => `${brand[i%5]} looks closer once ${who[(i*2)%6]} share the frame. ${tail[i%10]}`,
+  (i) => `At Central Rama 2, ${who[(i*4)%6]} let ${brand[(i*2)%5]} stay visible. ${see[(i*7)%10]} shows.`,
+  (i) => `${who[(i*5)%6]} keep ${brand[i%5]} from turning into a slogan. ${tail[(i*3)%10]}`,
+  (i) => `Santa takes the warmer side, Perth the still one, and ${brand[(i*4)%5]} gets both. ${see[i%10]}.`,
+  (i) => `${brand[(i*3)%5]} chose ${who[i%6]} well for the 6PM slot. ${see[(i*4)%10]} lands before the pose.`,
+  (i) => `What reads first is ${who[(i*3)%6]}, then ${brand[i%5]}, then ${see[(i*2)%10]}.`,
+  (i) => `${who[(i*7)%6]} don’t cover ${brand[(i*5)%5]}. ${tail[(i*4)%10]}`,
+  (i) => `Rama 2 evening, ${brand[i%5]}, ${who[(i*2)%6]} in the same light. ${see[(i*3)%10]}.`,
+  (i) => `${brand[(i*2)%5]} feels like care because ${who[i%6]} refuse the hard sell. ${tail[(i*5)%10]}`,
+  (i) => `Perth holds ${brand[i%5]} steady while Santa makes the skin story personal. ${see[(i*6)%10]}.`,
+  (i) => `${who[(i*4)%6]} plus ${brand[(i*3)%5]} is the Rama 2 reason to stop. ${tail[i%10]}`
 ];
-const middles = [
-  "The finish stays even under mall light.",
-  "Nothing in the corner looks overworked.",
-  "Treatment talk stays light because the faces already explain it.",
-  "The result sits on real features.",
-  "Booth and pair share one glance.",
-  "Pace is slow enough to remember.",
-  "No stiff pose left in the frame.",
-  "The clinic point remains readable.",
-  "Warmth does not cover the program.",
-  "Detail holds from the aisle."
-];
-const closers = [
-  "Rama 2 can keep this tempo.",
-  "A later frame in the same mood would fit.",
-  "The evening holds because nobody forces the next beat.",
-  "Worth staying with.",
-  "The balance is the part that lands.",
-  "This clinic hour earns another look.",
-  "Saving the rest of the attention for what follows.",
-  "Quiet is doing the work."
-];
-const pool = [];
-openings.forEach(function (o) {
-  middles.forEach(function (m) {
-    closers.forEach(function (c) { pool.push(o + " " + m + " " + c); });
-  });
-});
-let order = pool.map(function (_, i) { return i; });
+const comments = [];
+const seen = new Set();
+for (let n = 0; comments.length < 2000 && n < 8000; n++) {
+  const line = forms[n % forms.length](n);
+  if (seen.has(line)) continue;
+  seen.add(line);
+  comments.push(line);
+}
+let order = comments.map((_, i) => i);
 let cursor = 0, copied = 0, current = "";
 const countEl = document.getElementById("count");
 const poolEl = document.getElementById("pool");
 const preview = document.getElementById("preview");
 const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
-poolEl.textContent = "Pool: " + pool.length + " comments";
-function shuffle(list) {
-  for (let i = list.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const tmp = list[i]; list[i] = list[j]; list[j] = tmp;
-  }
-}
+poolEl.textContent = "Pool: " + comments.length + " comments";
+function shuffle(list) { for (let i = list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = list[i]; list[i] = list[j]; list[j] = t; } }
 shuffle(order);
-function showToast(text) {
-  toast.textContent = text; toast.classList.add("show");
-  clearTimeout(showToast._t);
-  showToast._t = setTimeout(function () { toast.classList.remove("show"); }, 1400);
-}
-function build(body) {
-  return body + "\n\nPERTHSANTA BEAUTY BLOOM\n\n#destinyclinicxPerthSanta";
-}
+function showToast(text) { toast.textContent = text; toast.classList.add("show"); clearTimeout(showToast._t); showToast._t = setTimeout(() => toast.classList.remove("show"), 1400); }
+function build(body) { return body + "\n\nPERTHSANTA BEAUTY BLOOM\n\n#destinyclinicxPerthSanta"; }
 async function generate() {
   if (cursor >= order.length) { shuffle(order); cursor = 0; }
-  current = build(pool[order[cursor++]]);
-  preview.textContent = current;
-  preview.classList.remove("empty");
-  postBtn.disabled = false;
-  try {
-    await navigator.clipboard.writeText(current);
-    copied += 1;
-    countEl.textContent = "Copied: " + copied + " comments";
-    showToast("Copied");
-  } catch (err) {
-    showToast("Copy failed. Select the text manually.");
-  }
+  current = build(comments[order[cursor++]]);
+  preview.textContent = current; preview.classList.remove("empty"); postBtn.disabled = false;
+  try { await navigator.clipboard.writeText(current); copied++; countEl.textContent = "Copied: " + copied + " comments"; showToast("Copied"); }
+  catch (e) { showToast("Copy failed. Select the text manually."); }
 }
 document.getElementById("generate").addEventListener("click", generate);
-postBtn.addEventListener("click", async function () {
-  await generate();
-  if (!current) return;
-  window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
-});
-document.addEventListener("keydown", function (event) {
-  if (event.code !== "Space") return;
-  const tag = document.activeElement && document.activeElement.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA") return;
-  event.preventDefault();
-  generate();
-});
+postBtn.addEventListener("click", async () => { await generate(); if (current) window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener"); });
+document.addEventListener("keydown", (e) => { if (e.code !== "Space") return; const tag = document.activeElement && document.activeElement.tagName; if (tag === "INPUT" || tag === "TEXTAREA") return; e.preventDefault(); generate(); });
 </script>
 </body>
 </html>
