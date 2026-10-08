@@ -39,33 +39,61 @@
   </div>
   <div class="toast" id="toast"></div>
 <script>
-const who = ["PerthSanta","Perth and Santa","Santa beside Perth","Perth next to Santa","the PerthSanta pair","Santa with Perth"];
-const brand = ["Destiny Clinic","the Destiny Clinic stage","Destiny Clinic at Central Rama 2","the Destiny Clinic booth","Destiny Clinic’s skincare stop"];
-const act = ["open","steady","warm","hold","share","anchor","brighten","settle","carry","frame"];
-const see = ["a tended glow","even skin under mall light","a calm treatment story","looked-after faces","soft clinic color behind black and white","no stiff pose","a readable skincare result","the floral set staying behind them","front-row light that still looks kind","care that doesn’t turn into a pitch"];
-const tail = ["Rama 2 can hold the evening slot.","Fans get the pair and the clinic in one stop.","The mall noise stays outside the frame.","Another pass would still fit.","Black and white against the clinic palette works.","They don’t chase the crowd.","The hour earns the stop.","VIP seats only make the same point closer.","Packages sit beside them, not over them.","October 8 is the pair’s night here."];
-const forms = [
-  (i) => `${who[i%6]} ${act[i%10]} ${brand[(i*3)%5]}, and ${see[(i*5)%10]} does the rest.`,
-  (i) => `${brand[i%5]} looks closer once ${who[(i*2)%6]} share the frame. ${tail[i%10]}`,
-  (i) => `At Central Rama 2, ${who[(i*4)%6]} let ${brand[(i*2)%5]} stay visible. ${see[(i*7)%10]} shows.`,
-  (i) => `${who[(i*5)%6]} keep ${brand[i%5]} from turning into a slogan. ${tail[(i*3)%10]}`,
-  (i) => `Santa takes the warmer side, Perth the still one, and ${brand[(i*4)%5]} gets both. ${see[i%10]}.`,
-  (i) => `${brand[(i*3)%5]} chose ${who[i%6]} well for the 6PM slot. ${see[(i*4)%10]} lands before the pose.`,
-  (i) => `What reads first is ${who[(i*3)%6]}, then ${brand[i%5]}, then ${see[(i*2)%10]}.`,
-  (i) => `${who[(i*7)%6]} don’t cover ${brand[(i*5)%5]}. ${tail[(i*4)%10]}`,
-  (i) => `Rama 2 evening, ${brand[i%5]}, ${who[(i*2)%6]} in the same light. ${see[(i*3)%10]}.`,
-  (i) => `${brand[(i*2)%5]} feels like care because ${who[i%6]} refuse the hard sell. ${tail[(i*5)%10]}`,
-  (i) => `Perth holds ${brand[i%5]} steady while Santa makes the skin story personal. ${see[(i*6)%10]}.`,
-  (i) => `${who[(i*4)%6]} plus ${brand[(i*3)%5]} is the Rama 2 reason to stop. ${tail[i%10]}`
+const openings = [
+  "PerthSanta look at ease beside Destiny Clinic at Central Rama 2.",
+  "This Perth and Santa stop feels soft, not staged.",
+  "Destiny Clinic with PerthSanta has a clean rhythm.",
+  "Rama 2 gives the booth air and the pair uses it well.",
+  "The pairing feels like care meeting a clear finish.",
+  "Santa beside Perth keeps the clinic frame ordinary.",
+  "Perth next to Santa makes the skincare stop easy to read.",
+  "The PerthSanta pair finally has Destiny Clinic's pace.",
+  "Black and white against the clinic palette works on them.",
+  "Destiny Clinic's stage stays behind the pair, not over them.",
+  "PerthSanta open the evening slot without chasing the crowd.",
+  "The mall noise stays outside and the pair hold the frame.",
+  "Santa with Perth lets the tended glow finish the line.",
+  "A clinic stop usually stiffens. PerthSanta keep it calm.",
+  "Destiny Clinic at Rama 2 gets a quiet host in the pair.",
+  "Front-row light stays kind once PerthSanta settle in.",
+  "The floral set stays behind them and the faces stay readable.",
+  "PerthSanta share the stop like a visit, not a pitch.",
+  "What the frame catches is the pair, then the clinic, then the glow.",
+  "They anchor Destiny Clinic without turning care into a claim.",
+  "October 8 at Rama 2 has PerthSanta's unhurried pace.",
+  "The Destiny Clinic booth looks tended once the pair stand in it.",
+  "Perth and Santa carry the evening without performing the result.",
+  "Destiny Clinic's skincare stop finally has their rhythm.",
+  "VIP seats only make the same calm point closer."
+];
+const middles = [
+  "A tended glow does the convincing.",
+  "Even skin under mall light stays easy to believe.",
+  "Looked-after faces, no stiff pose.",
+  "Soft clinic color behind black and white.",
+  "A readable skincare result, not a pitch.",
+  "Care that doesn't turn into a slogan.",
+  "The floral set stays secondary to them.",
+  "Front-row light still looks kind.",
+  "Packages sit beside them, not over them.",
+  "Nothing looks overworked."
+];
+const closers = [
+  "Rama 2 can hold the evening slot.",
+  "Fans get the pair and the clinic in one stop.",
+  "The mall noise stays outside the frame.",
+  "They don't chase the crowd.",
+  "The hour earns the stop.",
+  "Black and white against the clinic palette works.",
+  "Another pass would still fit.",
+  "Hoping the next stop keeps this quiet pace."
 ];
 const comments = [];
-const seen = new Set();
-for (let n = 0; comments.length < 2000 && n < 8000; n++) {
-  const line = forms[n % forms.length](n);
-  if (seen.has(line)) continue;
-  seen.add(line);
-  comments.push(line);
-}
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => comments.push(o + " " + m + " " + c));
+  });
+});
 let order = comments.map((_, i) => i);
 let cursor = 0, copied = 0, current = "";
 const countEl = document.getElementById("count");
