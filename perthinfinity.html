@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · Infinity x Perth</title>
+<style>
+  :root {
+    --bg: #f2f6f6;
+    --paper: #fffdfb;
+    --ink: #1e2a2c;
+    --muted: #6a7678;
+    --line: #d7e3e4;
+    --clinic: #2c5d66;
+    --clinic-dark: #234a52;
+    --gold: #b7a08a;
+    --chip: #e8f0f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #3d4a4c;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--clinic); color: #fff; flex: 0 0 auto; }
+  .primary:hover { background: var(--clinic-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    flex: 0 0 auto;
+  }
+  .secondary:hover { background: #e5eeee; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">English only. Longer comments, written to invite a reply.</p>
+      <div class="notice">Press Space to Generate and Copy. Trend start 16:45. Do not use the keyword or hashtag before then.</div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Post X</button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+<script>
+const openings = [
+  "Perth looks at ease beside Infinity Medical Clinic on the G Floor at Central Chanthaburi.",
+  "The Infinity booth gives Perth room, and Chanthaburi stays plain enough for the face to read.",
+  "Perth with Infinity feels like a stop on a care journey, not a staged reveal.",
+  "Infinity Medical Clinic put the booth at activity level, and Perth uses that open floor well.",
+  "On the G Floor, Perth lets the clinic setting stay visible instead of covering it.",
+  "The pairing is quiet: Perth at the Infinity corner, skin that does not look retouched.",
+  "Perth keeps the Chanthaburi frame personal, so the clinic result can be checked.",
+  "Infinity and Perth share the floor without crowding it. The skin detail gets a second look.",
+  "Perth beside Infinity gives the activity area a still center.",
+  "The booth slows when Perth stands with the clinic team, and the result has time to land.",
+  "Face and care stay in one register. Perth does not outshine the work Infinity is showing.",
+  "Perth at the Infinity booth looks like he arrived for a visit, not a poster.",
+  "The clinic light at Chanthaburi is plain, and Perth's skin still reads as his.",
+  "Infinity chose a face that leaves the result visible. Perth keeps that choice honest.",
+  "Soft afternoon on the G Floor, Perth unhurried, the clinic finish still readable up close.",
+  "Perth makes the Infinity stop feel closer than a mall activation.",
+  "The activity area is simple, and Perth uses that plainness well.",
+  "Perth and Infinity stay in the same calm temperature, no extra glow forced on.",
+  "This Infinity stop with Perth feels like a real clinic hour, not a filtered still.",
+  "Perth holds the moment the way someone would before the next step of a treatment plan.",
+  "Infinity next to Perth has a clean rhythm: face, pause, result you can believe.",
+  "The G Floor leaves air around Perth, so the clinic work can be looked at.",
+  "Perth does not push the mood. Infinity does the small, visible work.",
+  "First Perth's calm, then the skin that looks kept rather than corrected on screen.",
+  "Perth keeps the Chanthaburi stop soft. Infinity keeps it specific."
+];
+const middles = [
+  "The skin looks kept, not filtered into a different face.",
+  "The result reads at the cheek and under the eye, still his.",
+  "Infinity shows the outcome without covering Perth.",
+  "The finish stays believable once the mall light is accounted for.",
+  "Nothing looks overworked. The care sits and stays.",
+  "Booth, light and skin share one glance, and the result holds.",
+  "Even enough to notice, still close to real skin in daylight.",
+  "Chanthaburi gives the detail room to land instead of flash.",
+  "The face looks rested for a minute, not painted for a still.",
+  "Both the person and the clinic result stay visible, which is the useful part."
+];
+const closers = [
+  "What part of this journey would you want Infinity to show next?",
+  "Does the result read truer in the activity area, or would you still want a closer look?",
+  "Would you start with the consult, or with the finish Perth is standing in?",
+  "If the next chapter is a follow-up, what would you ask the clinic first?",
+  "Is this the kind of care you would book, or the kind you would ask a friend about?",
+  "What would you want Perth to walk through before the floor gets loud again?",
+  "Does this feel like a first visit to you, or a step further along?",
+  "Which part of the Infinity stop would you want to see in daylight after today?"
+];
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+poolEl.textContent = "Pool: " + pool.length + " comments";
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = list[i];
+    list[i] = list[j];
+    list[j] = tmp;
+  }
+}
+shuffle(order);
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+function build(body) {
+  return body + "\n\nPERTH JOURNEY INFINITY LOVE\n\n#InfinitymedicalclinicxPerth";
+}
+async function generate() {
+  if (cursor >= order.length) {
+    shuffle(order);
+    cursor = 0;
+  }
+  current = build(pool[order[cursor++]]);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+document.getElementById("generate").addEventListener("click", generate);
+postBtn.addEventListener("click", () => {
+  if (!current) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  event.preventDefault();
+  generate();
+});
+</script>
+</body>
+</html>
