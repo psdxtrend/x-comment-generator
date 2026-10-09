@@ -15,7 +15,8 @@
     --green: #2f6b4f;
     --gold: #8a6230;
     --inkblue: #2f4a6b;
-    --chip: #f3ebe4;
+    --berry: #a33d55;
+    --clinic: #2c5d66;
   }
   * { box-sizing: border-box; }
   body {
@@ -25,35 +26,39 @@
     background: var(--bg);
     color: var(--ink);
   }
-  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
-  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
-  .sub { margin: 0 0 22px; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 28px 16px 48px; }
+  h1 { margin: 0 0 4px; font-size: 22px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0 0 16px; color: var(--muted); line-height: 1.4; font-size: 13px; }
   a.card {
     display: block;
     text-decoration: none;
     color: inherit;
     background: var(--paper);
     border: 1px solid var(--line);
-    padding: 16px 16px 14px;
-    margin-bottom: 12px;
+    border-radius: 12px;
+    padding: 10px 12px 9px;
+    margin-bottom: 8px;
   }
   a.card:hover { border-color: #c9b8ae; }
   .tag {
     display: inline-block;
-    font-size: 12px;
+    font-size: 10px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: #fff;
-    padding: 3px 8px;
-    margin-bottom: 8px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    margin-bottom: 5px;
   }
   .tag.hair { background: var(--green); }
   .tag.venus { background: var(--rose); }
   .tag.loreal { background: var(--gold); }
   .tag.destiny { background: var(--inkblue); }
-  h2 { margin: 0 0 6px; font-size: 18px; font-weight: 600; }
-  p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
-  .go { margin-top: 10px; font-size: 13px; color: var(--ink); }
+  .tag.clinic { background: var(--clinic); }
+  .tag.berry { background: var(--berry); }
+  h2 { margin: 0 0 2px; font-size: 15px; font-weight: 600; }
+  p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
+  .go { margin-top: 6px; font-size: 12px; color: var(--ink); }
 </style>
 </head>
 <body>
@@ -86,6 +91,20 @@
       <span class="tag destiny">Destiny</span>
       <h2>Destiny Clinic x PerthSanta</h2>
       <p>Central Rama 2, Destiny Clinic corner. Trend start 17:45.</p>
+      <div class="go">Open generator →</div>
+    </a>
+
+    <a class="card" href="infinity.html">
+      <span class="tag clinic">Infinity</span>
+      <h2>Perth x Infinity Medical Clinic</h2>
+      <p>Central Chanthaburi, G Floor. Trend start 16:45.</p>
+      <div class="go">Open generator →</div>
+    </a>
+
+    <a class="card" href="3ce.html">
+      <span class="tag berry">3CE</span>
+      <h2>Santa x 3CE Velvet</h2>
+      <p>TikTok Shop live, 3CE Thailand. Trend start 18:45.</p>
       <div class="go">Open generator →</div>
     </a>
   </div>
