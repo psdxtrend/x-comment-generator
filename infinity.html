@@ -54,7 +54,7 @@
     font-size: 15px;
   }
   .preview.empty { color: var(--muted); }
-  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
   button {
     appearance: none;
     border: 0;
@@ -74,6 +74,40 @@
   }
   .secondary:hover { background: #e5eeee; }
   .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  .switch {
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: #c9d5d6;
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.2s ease;
+  }
+  .switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s ease;
+  }
+  .toggle.on .switch { background: var(--clinic); }
+  .toggle.on .switch i { transform: translateX(16px); }
+  .toggle span { font-size: 13px; }
   .toast {
     position: fixed;
     left: 50%;
@@ -94,7 +128,7 @@
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
-      <p class="sub">English only. Longer comments, written to invite a reply.</p>
+      <p class="sub">English only. Affirmative comments on the brand, artist, product and event.</p>
       <div class="notice">Press Space to Generate and Copy. Trend start 16:45. Do not use the keyword or hashtag before then.</div>
     </header>
     <div class="stats">
@@ -105,75 +139,88 @@
     <div class="actions">
       <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
       <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="toggle" id="extra" type="button" aria-pressed="false">
+        <span class="switch"><i></i></span>
+        <span id="extraLabel">Off: keyword + main hashtag</span>
+      </button>
     </div>
   </div>
   <div class="toast" id="toast"></div>
 <script>
 const openings = [
   "Perth looks at ease beside Infinity Medical Clinic on the G Floor at Central Chanthaburi.",
-  "The Infinity booth gives Perth room, and Chanthaburi stays plain enough for the face to read.",
-  "Perth with Infinity feels like a stop on a care journey, not a staged reveal.",
-  "Infinity Medical Clinic put the booth at activity level, and Perth uses that open floor well.",
+  "The Infinity booth gives Perth room, and the Chanthaburi activity area stays plain enough for the face to read.",
+  "Perth with Infinity Medical Clinic feels like a stop on a care journey, not a staged reveal.",
+  "Infinity put the booth at activity level, and Perth uses that open floor at Central Chanthaburi well.",
   "On the G Floor, Perth lets the clinic setting stay visible instead of covering it.",
-  "The pairing is quiet: Perth at the Infinity corner, skin that does not look retouched.",
-  "Perth keeps the Chanthaburi frame personal, so the clinic result can be checked.",
-  "Infinity and Perth share the floor without crowding it. The skin detail gets a second look.",
-  "Perth beside Infinity gives the activity area a still center.",
+  "The pairing is quiet: Perth at the Infinity corner, with skin that still reads as his own.",
+  "Perth keeps the Chanthaburi frame personal, so the clinic result can be checked up close.",
+  "Infinity and Perth share the floor without crowding it, and the skin detail gets a second look.",
+  "Perth beside Infinity gives the Central Chanthaburi activity area a still center.",
   "The booth slows when Perth stands with the clinic team, and the result has time to land.",
   "Face and care stay in one register. Perth does not outshine the work Infinity is showing.",
-  "Perth at the Infinity booth looks like he arrived for a visit, not a poster.",
-  "The clinic light at Chanthaburi is plain, and Perth's skin still reads as his.",
+  "Perth at the Infinity booth looks like he arrived for a visit, not a poster shoot.",
+  "The clinic light at Central Chanthaburi is plain, and Perth's skin still reads as his.",
   "Infinity chose a face that leaves the result visible. Perth keeps that choice honest.",
   "Soft afternoon on the G Floor, Perth unhurried, the clinic finish still readable up close.",
   "Perth makes the Infinity stop feel closer than a mall activation.",
   "The activity area is simple, and Perth uses that plainness well.",
-  "Perth and Infinity stay in the same calm temperature, no extra glow forced on.",
+  "Perth and Infinity stay in the same calm temperature, with no extra glow forced on.",
   "This Infinity stop with Perth feels like a real clinic hour, not a filtered still.",
   "Perth holds the moment the way someone would before the next step of a treatment plan.",
-  "Infinity next to Perth has a clean rhythm: face, pause, result you can believe.",
+  "Infinity next to Perth has a clean rhythm: face, pause, and a result you can believe.",
   "The G Floor leaves air around Perth, so the clinic work can be looked at.",
   "Perth does not push the mood. Infinity does the small, visible work.",
   "First Perth's calm, then the skin that looks kept rather than corrected on screen.",
-  "Perth keeps the Chanthaburi stop soft. Infinity keeps it specific."
+  "Perth keeps the Chanthaburi stop soft. Infinity Medical Clinic keeps it specific."
 ];
 const middles = [
   "The skin looks kept, not filtered into a different face.",
-  "The result reads at the cheek and under the eye, still his.",
+  "The result reads at the cheek and under the eye, and it is still his.",
   "Infinity shows the outcome without covering Perth.",
   "The finish stays believable once the mall light is accounted for.",
   "Nothing looks overworked. The care sits and stays.",
   "Booth, light and skin share one glance, and the result holds.",
-  "Even enough to notice, still close to real skin in daylight.",
-  "Chanthaburi gives the detail room to land instead of flash.",
+  "The evenness is easy to notice, and it still looks like real skin in daylight.",
+  "Central Chanthaburi gives the detail room to land instead of flash.",
   "The face looks rested for a minute, not painted for a still.",
   "Both the person and the clinic result stay visible, which is the useful part."
 ];
 const closers = [
-  "What part of this journey would you want Infinity to show next?",
-  "Does the result read truer in the activity area, or would you still want a closer look?",
-  "Would you start with the consult, or with the finish Perth is standing in?",
-  "If the next chapter is a follow-up, what would you ask the clinic first?",
-  "Is this the kind of care you would book, or the kind you would ask a friend about?",
-  "What would you want Perth to walk through before the floor gets loud again?",
-  "Does this feel like a first visit to you, or a step further along?",
-  "Which part of the Infinity stop would you want to see in daylight after today?"
+  "This G Floor meet already reads as a real care visit with Infinity Medical Clinic.",
+  "Perth and Infinity make the Central Chanthaburi stop feel steady and worth trusting.",
+  "The clinic result stays visible, and the journey with Perth stays easy to follow.",
+  "Infinity Medical Clinic fits Perth because the finish looks kept, not rebuilt.",
+  "The booth, the artist and the skin result sit in the same calm register.",
+  "Today's Infinity stop leaves the consult, the face and the outcome in one clear frame.",
+  "Perth carries the clinic hour without hiding the work Infinity is there to show.",
+  "Central Chanthaburi, the G Floor and Perth turn this Infinity visit into a clean, believable moment."
 ];
+
 const pool = [];
 openings.forEach(o => {
   middles.forEach(m => {
     closers.forEach(c => pool.push(o + " " + m + " " + c));
   });
 });
+
 let order = pool.map((_, i) => i);
 let cursor = 0;
 let copied = 0;
 let current = "";
+let lastBody = "";
+let extraOn = false;
+
 const countEl = document.getElementById("count");
 const poolEl = document.getElementById("pool");
 const preview = document.getElementById("preview");
 const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
+const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
+
 poolEl.textContent = "Pool: " + pool.length + " comments";
+
 function shuffle(list) {
   for (let i = list.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -182,22 +229,42 @@ function shuffle(list) {
     list[j] = tmp;
   }
 }
+
 shuffle(order);
+
 function showToast(text) {
   toast.textContent = text;
   toast.classList.add("show");
   clearTimeout(showToast._t);
   showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
 }
+
 function build(body) {
-  return body + "\n\nPERTH JOURNEY INFINITY LOVE\n\n#InfinitymedicalclinicxPerth";
+  const tags = extraOn
+    ? "#InfinitymedicalclinicxPerth #PerthTanapon"
+    : "#InfinitymedicalclinicxPerth";
+  return body + "\n\nPERTH JOURNEY INFINITY LOVE\n\n" + tags;
 }
+
+function refreshExtra() {
+  extraBtn.classList.toggle("on", extraOn);
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #PerthTanapon"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+}
+
 async function generate() {
   if (cursor >= order.length) {
     shuffle(order);
     cursor = 0;
   }
-  current = build(pool[order[cursor++]]);
+  lastBody = pool[order[cursor++]];
+  current = build(lastBody);
   preview.textContent = current;
   preview.classList.remove("empty");
   postBtn.disabled = false;
@@ -210,7 +277,12 @@ async function generate() {
     showToast("Copy failed. Select the text manually.");
   }
 }
+
 document.getElementById("generate").addEventListener("click", generate);
+extraBtn.addEventListener("click", () => {
+  extraOn = !extraOn;
+  refreshExtra();
+});
 postBtn.addEventListener("click", () => {
   if (!current) return;
   window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
@@ -218,7 +290,7 @@ postBtn.addEventListener("click", () => {
 document.addEventListener("keydown", (event) => {
   if (event.code !== "Space") return;
   const tag = document.activeElement && document.activeElement.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
   event.preventDefault();
   generate();
 });
