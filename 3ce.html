@@ -54,7 +54,7 @@
     font-size: 15px;
   }
   .preview.empty { color: var(--muted); }
-  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
   button {
     appearance: none;
     border: 0;
@@ -74,6 +74,40 @@
   }
   .secondary:hover { background: #f3e8eb; }
   .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  .switch {
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: #e0d0d6;
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.2s ease;
+  }
+  .switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s ease;
+  }
+  .toggle.on .switch { background: var(--berry); }
+  .toggle.on .switch i { transform: translateX(16px); }
+  .toggle span { font-size: 13px; }
   .toast {
     position: fixed;
     left: 50%;
@@ -94,7 +128,7 @@
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
-      <p class="sub">English only. Longer comments, written to invite a reply.</p>
+      <p class="sub">English only. Affirmative comments on the brand, artist, product and event.</p>
       <div class="notice">Press Space to Generate and Copy. Trend start 18:45. Do not use the keyword or hashtag before then.</div>
     </header>
     <div class="stats">
@@ -105,20 +139,24 @@
     <div class="actions">
       <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
       <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="toggle" id="extra" type="button" aria-pressed="false">
+        <span class="switch"><i></i></span>
+        <span id="extraLabel">Off: keyword + main hashtag</span>
+      </button>
     </div>
   </div>
   <div class="toast" id="toast"></div>
 <script>
 const openings = [
-  "Santa stays easy beside the 3CE velvet set on the TikTok live, and the strawberry shades do not fight his face.",
-  "The 3CE shop live gives Santa room, and the light stays soft enough to read the tint instead of the set.",
+  "Santa stays easy beside the 3CE velvet set on the TikTok Shop live, and the strawberry shades do not fight his face.",
+  "The 3CE Thailand shop live gives Santa room, and the light stays soft enough to read the tint.",
   "Santa with 3CE feels like a swatch, not a performance, even with the shop counter in frame.",
   "3CE put the Velvet Strawberry shades next to Santa, and the pink stays in the same temperature as his skin.",
   "On the 3CE live, Santa lets the tube sit in his hand long enough for the color to be the point.",
   "The pairing is quiet: Santa at the 3CE booth, strawberry velvet in a shade that does not need a caption.",
   "Santa keeps the 3CE frame personal, so the lip tint reads as something worn, not staged.",
   "3CE and Santa share the live without crowding it. The velvet shades get a clean second look.",
-  "Santa beside the 3CE strawberry set gives the shop live a still center.",
+  "Santa beside the 3CE strawberry set gives the TikTok Shop live a still center.",
   "The 3CE live slows when Santa swatches, and the pink has time to settle on camera.",
   "Face and formula stay in one register. Santa does not outshine the 3CE velvet.",
   "Santa at the 3CE counter looks like he is choosing a shade, not selling a mood.",
@@ -127,53 +165,62 @@ const openings = [
   "Soft light on the 3CE live, Santa unhurried, the velvet shade still readable at the lip line.",
   "Santa makes the 3CE shop live feel closer than a product tile.",
   "The booth on the 3CE live is simple, and Santa uses that plainness well.",
-  "Santa and the 3CE strawberry shades stay in the same quiet pink, no extra gloss forced on.",
+  "Santa and the 3CE strawberry shades stay in the same quiet pink, with no extra gloss forced on.",
   "This 3CE stop with Santa feels like a real swatch hour, not a filtered still.",
   "Santa holds the 3CE tube the way someone would before leaving the house.",
   "3CE Velvet next to Santa has a clean rhythm: shade, pause, real lip.",
   "The live frame at 3CE leaves air around Santa, so the strawberry tint can be checked.",
   "Santa does not push the mood. The 3CE velvet does the small work.",
   "First Santa's calm, then the 3CE pink that looks like it belongs on skin.",
-  "Santa keeps the 3CE live soft. The velvet tint keeps it specific."
+  "Santa keeps the 3CE Thailand live soft. The velvet tint keeps it specific."
 ];
 const middles = [
   "The finish looks like color that settled, not a filter laid on top.",
   "Velvet reads at the edges, with the lip line still his.",
   "3CE shows the tint without covering Santa's face.",
-  "The pink stays believable once the light stops moving.",
+  "The pink stays believable once the live light stops moving.",
   "Nothing looks overworked. The shade sits and stays.",
   "Tube, light and lip share one glance, and the result holds.",
-  "Polished enough to notice, still close to a real mouth.",
-  "The shop live gives the velvet room to land instead of flash.",
+  "The polish is easy to notice, and it still looks close to a real mouth.",
+  "The TikTok Shop live gives the velvet room to land instead of flash.",
   "The shade looks worn for a minute, not painted for a still.",
-  "Both the face and the tint stay visible, which is the useful part."
+  "Both the face and the Strawberry Shortcake tint stay visible, which is the useful part."
 ];
 const closers = [
-  "Which of the three strawberry pinks would you actually wear on a normal day?",
-  "Does the velvet read truer on the live, or would you still want a wrist swatch?",
-  "Would you start with the softest shade or the one that sits deeper?",
-  "If the next chapter is a full wear test, which shade should Santa keep on?",
-  "Is this the pink you would reach for, or the one you would gift?",
-  "What would you ask Santa to swatch again before the live moves on?",
-  "Does this finish feel like a daytime lip to you, or only for the evening?",
-  "Which shade would you want to see in daylight after the shop live ends?"
+  "The three soft strawberry pinks already sit cleanly on Santa in this 3CE live.",
+  "3CE Velvet Lip Tint and Santa make the TikTok Shop hour feel like a real swatch, not a poster.",
+  "The Strawberry Shortcake shades stay sweet, soft and readable from tube to lip.",
+  "Santa carries the 3CE Thailand live without hiding the velvet finish.",
+  "This pairing leaves the formula, the pink and the artist in one clear frame.",
+  "The shop live, the velvet texture and Santa stay in the same quiet register.",
+  "3CE Velvet fits Santa because the tint looks worn, not staged.",
+  "TikTok Shop, 3CE Thailand and Santa turn these three pinks into a clean, believable wear."
 ];
+
 const pool = [];
 openings.forEach(o => {
   middles.forEach(m => {
     closers.forEach(c => pool.push(o + " " + m + " " + c));
   });
 });
+
 let order = pool.map((_, i) => i);
 let cursor = 0;
 let copied = 0;
 let current = "";
+let lastBody = "";
+let extraOn = false;
+
 const countEl = document.getElementById("count");
 const poolEl = document.getElementById("pool");
 const preview = document.getElementById("preview");
 const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
+const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
+
 poolEl.textContent = "Pool: " + pool.length + " comments";
+
 function shuffle(list) {
   for (let i = list.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -182,22 +229,42 @@ function shuffle(list) {
     list[j] = tmp;
   }
 }
+
 shuffle(order);
+
 function showToast(text) {
   toast.textContent = text;
   toast.classList.add("show");
   clearTimeout(showToast._t);
   showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
 }
+
 function build(body) {
-  return body + "\n\nSANTA 3CE VVSTRAWBERRY\n\n#3CEVelvetxSanta";
+  const tags = extraOn
+    ? "#3CEVelvetxSanta #Santapp"
+    : "#3CEVelvetxSanta";
+  return body + "\n\nSANTA 3CE VVSTRAWBERRY\n\n" + tags;
 }
+
+function refreshExtra() {
+  extraBtn.classList.toggle("on", extraOn);
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #Santapp"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+}
+
 async function generate() {
   if (cursor >= order.length) {
     shuffle(order);
     cursor = 0;
   }
-  current = build(pool[order[cursor++]]);
+  lastBody = pool[order[cursor++]];
+  current = build(lastBody);
   preview.textContent = current;
   preview.classList.remove("empty");
   postBtn.disabled = false;
@@ -210,7 +277,12 @@ async function generate() {
     showToast("Copy failed. Select the text manually.");
   }
 }
+
 document.getElementById("generate").addEventListener("click", generate);
+extraBtn.addEventListener("click", () => {
+  extraOn = !extraOn;
+  refreshExtra();
+});
 postBtn.addEventListener("click", () => {
   if (!current) return;
   window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
@@ -218,7 +290,7 @@ postBtn.addEventListener("click", () => {
 document.addEventListener("keydown", (event) => {
   if (event.code !== "Space") return;
   const tag = document.activeElement && document.activeElement.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
   event.preventDefault();
   generate();
 });
