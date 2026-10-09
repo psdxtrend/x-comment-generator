@@ -129,7 +129,7 @@
     <header>
       <h1>X Comment Generator</h1>
       <p class="sub">Job: Perth x Infinity Medical Clinic</p>
-      <div class="notice">Press Space to Generate and Copy. Trend start 16:45. Do not use the keyword or hashtag before then. Limit 280 with keyword and both hashtags.</div>
+      <div class="notice">Press Space to Generate and Copy. Trend start 16:45. Do not use the keyword or hashtag before then.</div>
     </header>
     <div class="stats">
       <div class="count" id="count">Copied: 0 comments</div>
@@ -267,7 +267,7 @@ function refreshExtra() {
   }
   preview.textContent = current;
   preview.classList.remove("empty");
-  countEl.textContent = "Copied: " + copied + " comments · " + current.length + "/" + LIMIT;
+  countEl.textContent = "Copied: " + copied + " comments";
 }
 
 async function generate() {
@@ -286,7 +286,7 @@ async function generate() {
     }
   }
   if (!body) {
-    showToast("No comment fits " + LIMIT + ".");
+    showToast("No comment fits.");
     return;
   }
   lastBody = body;
@@ -297,14 +297,14 @@ async function generate() {
   try {
     await navigator.clipboard.writeText(current);
     copied += 1;
-    countEl.textContent = "Copied: " + copied + " comments · " + current.length + "/" + LIMIT;
-    showToast("Copied " + current.length + "/" + LIMIT);
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
   } catch (err) {
     showToast("Copy failed. Select the text manually.");
   }
 }
 
-poolEl.textContent = "Pool: " + pool.length + " comments · max 264/280 with both hashtags";
+poolEl.textContent = "Pool: " + pool.length + " comments";
 document.getElementById("generate").addEventListener("click", generate);
 extraBtn.addEventListener("click", () => {
   extraOn = !extraOn;
