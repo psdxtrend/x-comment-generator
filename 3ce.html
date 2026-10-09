@@ -128,8 +128,8 @@
   <div class="wrap">
     <header>
       <h1>X Comment Generator</h1>
-      <p class="sub">Santa x 3CE Velvet</p>
-      <div class="notice">Press Space to Generate and Copy. Trend start 18:45. Do not use the keyword or hashtag before then.</div>
+      <p class="sub">Job: Santa x 3CE Velvet</p>
+      <div class="notice">Press Space to Generate and Copy. Trend start 18:45. Do not use the keyword or hashtag before then. Limit 280 with keyword and both hashtags.</div>
     </header>
     <div class="stats">
       <div class="count" id="count">Copied: 0 comments</div>
@@ -147,54 +147,55 @@
   </div>
   <div class="toast" id="toast"></div>
 <script>
+const LIMIT = 280;
 const openings = [
-  "Santa stays easy beside the 3CE velvet set on the TikTok Shop live, and the strawberry shades do not fight his face.",
-  "The 3CE Thailand shop live gives Santa room, and the light stays soft enough to read the tint.",
-  "Santa with 3CE feels like a swatch, not a performance, even with the shop counter in frame.",
-  "3CE put the Velvet Strawberry shades next to Santa, and the pink stays in the same temperature as his skin.",
-  "On the 3CE live, Santa lets the tube sit in his hand long enough for the color to be the point.",
-  "The pairing is quiet: Santa at the 3CE booth, strawberry velvet in a shade that does not need a caption.",
-  "Santa keeps the 3CE frame personal, so the lip tint reads as something worn, not staged.",
-  "3CE and Santa share the live without crowding it. The velvet shades get a clean second look.",
-  "Santa beside the 3CE strawberry set gives the TikTok Shop live a still center.",
-  "The 3CE live slows when Santa swatches, and the pink has time to settle on camera.",
-  "Face and formula stay in one register. Santa does not outshine the 3CE velvet.",
-  "Santa at the 3CE counter looks like he is choosing a shade, not selling a mood.",
-  "The strawberry velvet sits close to Santa's mouth, and the live does not blur the edge.",
-  "3CE chose a face that leaves the tint visible. Santa keeps that choice honest.",
-  "Soft light on the 3CE live, Santa unhurried, the velvet shade still readable at the lip line.",
+  "Santa stays easy beside the 3CE velvet set on the shop live.",
+  "The 3CE Thailand live gives Santa room, and the tint stays readable.",
+  "Santa with 3CE feels like a swatch, not a performance.",
+  "3CE put the strawberry shades next to Santa, and the pink fits.",
+  "On the 3CE live, Santa lets the tube sit long enough to see the color.",
+  "The pairing is quiet: Santa at 3CE, velvet that needs no caption.",
+  "Santa keeps the 3CE frame personal, so the tint looks worn.",
+  "3CE and Santa share the live without crowding it.",
+  "Santa beside the strawberry set gives the shop live a still center.",
+  "The 3CE live slows when Santa swatches, and the pink settles.",
+  "Face and formula stay in one register. Santa does not outshine it.",
+  "Santa at the 3CE counter looks like he is choosing a shade.",
+  "The velvet sits close to Santa's mouth, and the edge stays clear.",
+  "3CE chose a face that leaves the tint visible.",
+  "Soft light on the live, Santa unhurried, shade readable at the lip.",
   "Santa makes the 3CE shop live feel closer than a product tile.",
-  "The booth on the 3CE live is simple, and Santa uses that plainness well.",
-  "Santa and the 3CE strawberry shades stay in the same quiet pink, with no extra gloss forced on.",
-  "This 3CE stop with Santa feels like a real swatch hour, not a filtered still.",
-  "Santa holds the 3CE tube the way someone would before leaving the house.",
-  "3CE Velvet next to Santa has a clean rhythm: shade, pause, real lip.",
-  "The live frame at 3CE leaves air around Santa, so the strawberry tint can be checked.",
+  "The booth is simple, and Santa uses that plainness well.",
+  "Santa and the strawberry shades stay in the same quiet pink.",
+  "This 3CE stop with Santa feels like a real swatch hour.",
+  "Santa holds the tube the way someone would before leaving.",
+  "3CE Velvet next to Santa has a clean rhythm: shade, then lip.",
+  "The live leaves air around Santa, so the tint can be checked.",
   "Santa does not push the mood. The 3CE velvet does the small work.",
-  "First Santa's calm, then the 3CE pink that looks like it belongs on skin.",
-  "Santa keeps the 3CE Thailand live soft. The velvet tint keeps it specific."
+  "First Santa's calm, then a pink that looks like it belongs.",
+  "Santa keeps the live soft. The velvet tint keeps it specific."
 ];
 const middles = [
-  "The finish looks like color that settled, not a filter laid on top.",
-  "Velvet reads at the edges, with the lip line still his.",
-  "3CE shows the tint without covering Santa's face.",
-  "The pink stays believable once the live light stops moving.",
+  "The finish looks settled, not filtered on.",
+  "Velvet reads at the edges, and the lip line is still his.",
+  "3CE shows the tint without covering Santa.",
+  "The pink stays believable once the live light steadies.",
   "Nothing looks overworked. The shade sits and stays.",
-  "Tube, light and lip share one glance, and the result holds.",
-  "The polish is easy to notice, and it still looks close to a real mouth.",
-  "The TikTok Shop live gives the velvet room to land instead of flash.",
-  "The shade looks worn for a minute, not painted for a still.",
-  "Both the face and the Strawberry Shortcake tint stay visible, which is the useful part."
+  "Tube, light and lip share one glance.",
+  "The polish is easy to see, and it still looks real.",
+  "The shop live gives the velvet room to land.",
+  "The shade looks worn, not painted for a still.",
+  "Both the face and the strawberry tint stay visible."
 ];
 const closers = [
-  "The three soft strawberry pinks already sit cleanly on Santa in this 3CE live.",
-  "3CE Velvet Lip Tint and Santa make the TikTok Shop hour feel like a real swatch, not a poster.",
-  "The Strawberry Shortcake shades stay sweet, soft and readable from tube to lip.",
-  "Santa carries the 3CE Thailand live without hiding the velvet finish.",
-  "This pairing leaves the formula, the pink and the artist in one clear frame.",
-  "The shop live, the velvet texture and Santa stay in the same quiet register.",
+  "The soft strawberry pinks already sit cleanly on Santa.",
+  "3CE Velvet and Santa make the shop hour feel like a real swatch.",
+  "The shades stay sweet and readable from tube to lip.",
+  "Santa carries the 3CE live without hiding the velvet finish.",
+  "This pairing leaves the formula, the pink and the artist in one frame.",
+  "The live, the texture and Santa stay in the same quiet register.",
   "3CE Velvet fits Santa because the tint looks worn, not staged.",
-  "TikTok Shop, 3CE Thailand and Santa turn these three pinks into a clean, believable wear."
+  "3CE Thailand and Santa turn these pinks into a believable wear."
 ];
 
 const pool = [];
@@ -219,8 +220,6 @@ const toast = document.getElementById("toast");
 const extraBtn = document.getElementById("extra");
 const extraLabel = document.getElementById("extraLabel");
 
-poolEl.textContent = "Pool: " + pool.length + " comments";
-
 function shuffle(list) {
   for (let i = list.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -239,11 +238,15 @@ function showToast(text) {
   showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
 }
 
-function build(body) {
+function suffix() {
   const tags = extraOn
     ? "#3CEVelvetxSanta\n#Santapp"
     : "#3CEVelvetxSanta";
-  return body + "\n\nSANTA 3CE VVSTRAWBERRY\n\n" + tags;
+  return "\n\nSANTA 3CE VVSTRAWBERRY\n\n" + tags;
+}
+
+function build(body) {
+  return body + suffix();
 }
 
 function refreshExtra() {
@@ -254,37 +257,61 @@ function refreshExtra() {
     : "Off: keyword + main hashtag";
   if (!lastBody) return;
   current = build(lastBody);
+  if (current.length > LIMIT) {
+    lastBody = "";
+    current = "";
+    preview.textContent = "Your comment will appear here.";
+    preview.classList.add("empty");
+    postBtn.disabled = true;
+    return;
+  }
   preview.textContent = current;
   preview.classList.remove("empty");
+  countEl.textContent = "Copied: " + copied + " comments · " + current.length + "/" + LIMIT;
 }
 
 async function generate() {
-  if (cursor >= order.length) {
-    shuffle(order);
-    cursor = 0;
+  const tail = suffix();
+  const room = LIMIT - tail.length;
+  let body = "";
+  for (let n = 0; n < pool.length; n++) {
+    if (cursor >= order.length) {
+      shuffle(order);
+      cursor = 0;
+    }
+    const next = pool[order[cursor++]];
+    if (next.length <= room) {
+      body = next;
+      break;
+    }
   }
-  lastBody = pool[order[cursor++]];
-  current = build(lastBody);
+  if (!body) {
+    showToast("No comment fits " + LIMIT + ".");
+    return;
+  }
+  lastBody = body;
+  current = build(body);
   preview.textContent = current;
   preview.classList.remove("empty");
   postBtn.disabled = false;
   try {
     await navigator.clipboard.writeText(current);
     copied += 1;
-    countEl.textContent = "Copied: " + copied + " comments";
-    showToast("Copied");
+    countEl.textContent = "Copied: " + copied + " comments · " + current.length + "/" + LIMIT;
+    showToast("Copied " + current.length + "/" + LIMIT);
   } catch (err) {
     showToast("Copy failed. Select the text manually.");
   }
 }
 
+poolEl.textContent = "Pool: " + pool.length + " comments · max 250/280 with both hashtags";
 document.getElementById("generate").addEventListener("click", generate);
 extraBtn.addEventListener("click", () => {
   extraOn = !extraOn;
   refreshExtra();
 });
 postBtn.addEventListener("click", () => {
-  if (!current) return;
+  if (!current || current.length > LIMIT) return;
   window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
 });
 document.addEventListener("keydown", (event) => {
