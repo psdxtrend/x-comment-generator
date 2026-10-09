@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · 3CE x Santa</title>
+<style>
+  :root {
+    --bg: #f8f1f3;
+    --paper: #fffdfb;
+    --ink: #2c2226;
+    --muted: #7a6870;
+    --line: #eadde2;
+    --berry: #a33d55;
+    --berry-dark: #843246;
+    --gold: #b7a08a;
+    --chip: #f6ecee;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #4e4246;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--berry); color: #fff; flex: 0 0 auto; }
+  .primary:hover { background: var(--berry-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    flex: 0 0 auto;
+  }
+  .secondary:hover { background: #f3e8eb; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">English only. Longer comments, written to invite a reply.</p>
+      <div class="notice">Press Space to Generate and Copy. Trend start 18:45. Do not use the keyword or hashtag before then.</div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Post X</button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+<script>
+const openings = [
+  "Santa stays easy beside the 3CE velvet set on the TikTok live, and the strawberry shades do not fight his face.",
+  "The 3CE shop live gives Santa room, and the light stays soft enough to read the tint instead of the set.",
+  "Santa with 3CE feels like a swatch, not a performance, even with the shop counter in frame.",
+  "3CE put the Velvet Strawberry shades next to Santa, and the pink stays in the same temperature as his skin.",
+  "On the 3CE live, Santa lets the tube sit in his hand long enough for the color to be the point.",
+  "The pairing is quiet: Santa at the 3CE booth, strawberry velvet in a shade that does not need a caption.",
+  "Santa keeps the 3CE frame personal, so the lip tint reads as something worn, not staged.",
+  "3CE and Santa share the live without crowding it. The velvet shades get a clean second look.",
+  "Santa beside the 3CE strawberry set gives the shop live a still center.",
+  "The 3CE live slows when Santa swatches, and the pink has time to settle on camera.",
+  "Face and formula stay in one register. Santa does not outshine the 3CE velvet.",
+  "Santa at the 3CE counter looks like he is choosing a shade, not selling a mood.",
+  "The strawberry velvet sits close to Santa's mouth, and the live does not blur the edge.",
+  "3CE chose a face that leaves the tint visible. Santa keeps that choice honest.",
+  "Soft light on the 3CE live, Santa unhurried, the velvet shade still readable at the lip line.",
+  "Santa makes the 3CE shop live feel closer than a product tile.",
+  "The booth on the 3CE live is simple, and Santa uses that plainness well.",
+  "Santa and the 3CE strawberry shades stay in the same quiet pink, no extra gloss forced on.",
+  "This 3CE stop with Santa feels like a real swatch hour, not a filtered still.",
+  "Santa holds the 3CE tube the way someone would before leaving the house.",
+  "3CE Velvet next to Santa has a clean rhythm: shade, pause, real lip.",
+  "The live frame at 3CE leaves air around Santa, so the strawberry tint can be checked.",
+  "Santa does not push the mood. The 3CE velvet does the small work.",
+  "First Santa's calm, then the 3CE pink that looks like it belongs on skin.",
+  "Santa keeps the 3CE live soft. The velvet tint keeps it specific."
+];
+const middles = [
+  "The finish looks like color that settled, not a filter laid on top.",
+  "Velvet reads at the edges, with the lip line still his.",
+  "3CE shows the tint without covering Santa's face.",
+  "The pink stays believable once the light stops moving.",
+  "Nothing looks overworked. The shade sits and stays.",
+  "Tube, light and lip share one glance, and the result holds.",
+  "Polished enough to notice, still close to a real mouth.",
+  "The shop live gives the velvet room to land instead of flash.",
+  "The shade looks worn for a minute, not painted for a still.",
+  "Both the face and the tint stay visible, which is the useful part."
+];
+const closers = [
+  "Which of the three strawberry pinks would you actually wear on a normal day?",
+  "Does the velvet read truer on the live, or would you still want a wrist swatch?",
+  "Would you start with the softest shade or the one that sits deeper?",
+  "If the next chapter is a full wear test, which shade should Santa keep on?",
+  "Is this the pink you would reach for, or the one you would gift?",
+  "What would you ask Santa to swatch again before the live moves on?",
+  "Does this finish feel like a daytime lip to you, or only for the evening?",
+  "Which shade would you want to see in daylight after the shop live ends?"
+];
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+poolEl.textContent = "Pool: " + pool.length + " comments";
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = list[i];
+    list[i] = list[j];
+    list[j] = tmp;
+  }
+}
+shuffle(order);
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+function build(body) {
+  return body + "\n\nSANTA 3CE VVSTRAWBERRY\n\n#3CEVelvetxSanta";
+}
+async function generate() {
+  if (cursor >= order.length) {
+    shuffle(order);
+    cursor = 0;
+  }
+  current = build(pool[order[cursor++]]);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+document.getElementById("generate").addEventListener("click", generate);
+postBtn.addEventListener("click", () => {
+  if (!current) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  event.preventDefault();
+  generate();
+});
+</script>
+</body>
+</html>
