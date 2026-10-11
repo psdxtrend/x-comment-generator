@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · PSD Fanival</title>
+<style>
+  :root {
+    --bg: #f6f1ec;
+    --paper: #fffdfb;
+    --ink: #2a2428;
+    --muted: #6f6569;
+    --line: #e5dcd6;
+    --accent: #b83b4a;
+    --accent-dark: #9a2f3c;
+    --gold: #b7a08a;
+    --chip: #f3ebe6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #4e4246;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--accent); color: #fff; }
+  .primary:hover { background: var(--accent-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .secondary:hover { background: #f3e8eb; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  .switch {
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: #e0d0d6;
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.2s ease;
+  }
+  .switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s ease;
+  }
+  .toggle.on .switch { background: var(--accent); }
+  .toggle.on .switch i { transform: translateX(16px); }
+  .toggle span { font-size: 13px; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">PSD · GMMTV FANIVAL 2026 Happy Family</p>
+      <div class="notice">Press Space or Generate to copy. Trend starts 18:15 BKK. Do not use keyword or hashtag before then.</div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate & Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="toggle" id="extra" type="button" aria-pressed="false">
+        <span class="switch"><i></i></span>
+        <span id="extraLabel">Off: keyword + main hashtag</span>
+      </button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+const LIMIT = 280;
+
+const openings = [
+  "Perth and Santa walk into Union Hall with Domiia right behind them.",
+  "The PSD trio turns the Fanival floor into their own space tonight.",
+  "Domiia’s horns catch the light while PerthSanta stay close together.",
+  "GMMTV Fanival Happy Family gets a full family visit from PSD.",
+  "Perth keeps one hand near Santa as Domiia bounces beside them.",
+  "Union Mall’s gathering point fills up the moment the three appear.",
+  "Domiia leads the way, red hair swinging, while Perth and Santa follow.",
+  "The devil chemistry shows in small looks between Perth and Santa.",
+  "Fans at Fanival spot the black suit and white wing first.",
+  "PerthSanta let Domiia take the center for a second before pulling him back.",
+  "Happy Family feels different once the PSD family steps onto the floor.",
+  "Domiia tilts his head the way Perth does when he is amused.",
+  "Santa laughs at something Domiia does and Perth just watches them both.",
+  "The landmark energy sits quiet until the three of them stand together.",
+  "Union Hall 2 holds the fansign line while Domiia stays near the pair.",
+  "Perth and Santa keep the pace slow so Domiia can keep up.",
+  "The rocker devil look of Domiia matches the black-and-white theme they like.",
+  "Fanival’s free entry means more people catch the PSD moment by chance.",
+  "Domiia stands between them for photos and refuses to move first.",
+  "PerthSanta arrive with Domiia and the whole corner of the hall shifts.",
+  "Little Devils already know the three will stay close the whole time.",
+  "Domiia’s wings fold and open while PerthSanta talk to fans nearby.",
+  "The gathering area at Union Hall becomes their temporary home for the evening.",
+  "Perth checks on Santa, Santa checks on Domiia, and the loop stays easy."
+];
+
+const middles = [
+  "The three of them move as one unit even when Domiia wanders.",
+  "Nothing feels forced; Domiia just does what he always does.",
+  "Fans catch the small hand Domiia puts on Santa’s sleeve.",
+  "Perth’s calm sits next to Domiia’s restless feet.",
+  "The black suit and red hair stay readable under the hall lights.",
+  "Santa’s smile shows up faster when Domiia is in the frame.",
+  "They leave space around Domiia so he can spin once and come back.",
+  "The devil theme stays light instead of heavy.",
+  "Perth and Santa keep their usual rhythm while Domiia adds the extra motion.",
+  "Union Hall’s noise drops a little whenever the three stand still together.",
+  "Domiia’s pout appears for half a second before he grins again.",
+  "The family moment does not need extra staging.",
+  "Perth’s rock side and Santa’s dancer side both show up in how Domiia moves.",
+  "Fans notice the same black-and-white colors on all three.",
+  "Domiia stays close enough that Perth can rest a hand on his head.",
+  "The landmark feeling comes from how ordinary the three look together.",
+  "Santa leans down to fix Domiia’s wing and Perth just waits.",
+  "The Happy Family setting fits the way they already act around each other."
+];
+
+const closers = [
+  "Tonight’s stop at Fanival belongs to the full PSD family.",
+  "Little Devils get the version of PerthSanta they already know, plus Domiia.",
+  "The three leave Union Hall the same way they arrived: together.",
+  "GMMTV Fanival 2026 now has one clear PSD landmark night.",
+  "Domiia keeps the energy while Perth and Santa keep the center.",
+  "Fans walk away with the same picture: Perth, Santa, and the little devil between them.",
+  "The evening stays simple and that is exactly why it works.",
+  "PerthSantaDomiia turn a regular Fanival slot into their own mark.",
+  "Union Mall holds the moment without needing to change anything.",
+  "The devil chemistry stays visible even when Domiia is the loudest one.",
+  "Happy Family ends up looking more complete with the three of them there.",
+  "The landmark is just the three of them standing in the same place again."
+];
+
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+let lastBody = "";
+let extraOn = false;
+
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+}
+
+shuffle(order);
+
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+function suffix() {
+  const tags = extraOn
+    ? "#GMMTVFANIVAL2026HappyFamilyxPS\n#PerthSanta #DOMIIA"
+    : "#GMMTVFANIVAL2026HappyFamilyxPS";
+  return "\n\nPSD DEVILS LANDMARK 2026\n\n" + tags;
+}
+
+function build(body) {
+  return body + suffix();
+}
+
+function refreshExtra() {
+  extraBtn.classList.toggle("on", extraOn);
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #PerthSanta #DOMIIA"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  if (current.length > LIMIT) {
+    lastBody = "";
+    current = "";
+    preview.textContent = "Your comment will appear here.";
+    preview.classList.add("empty");
+    postBtn.disabled = true;
+    return;
+  }
+  preview.textContent = current;
+  preview.classList.remove("empty");
+}
+
+async function generate() {
+  const tail = suffix();
+  const room = LIMIT - tail.length;
+  let body = "";
+  for (let n = 0; n < pool.length; n++) {
+    if (cursor >= order.length) {
+      shuffle(order);
+      cursor = 0;
+    }
+    const next = pool[order[cursor++]];
+    if (next.length <= room) {
+      body = next;
+      break;
+    }
+  }
+  if (!body) {
+    showToast("No comment fits.");
+    return;
+  }
+  lastBody = body;
+  current = build(body);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+
+poolEl.textContent = "Pool: " + pool.length + " comments";
+document.getElementById("generate").addEventListener("click", generate);
+extraBtn.addEventListener("click", () => {
+  extraOn = !extraOn;
+  refreshExtra();
+});
+postBtn.addEventListener("click", () => {
+  if (!current || current.length > LIMIT) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
+  event.preventDefault();
+  generate();
+});
+</script>
+</body>
+
+</html>
