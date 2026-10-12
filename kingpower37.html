@@ -127,7 +127,7 @@ button {
 <div class="wrap">
   <header>
     <h1>X Comment Generator</h1>
-    <p class="sub">PSD Family x King Power 37th Anniversary</p>
+    <p class="sub">PSD · King Power 37th Anniversary</p>
     <div class="notice">Press Generate &amp; Copy to get comment. Trend starts 17:45 BKK. Do not use keyword or hashtag before then.</div>
   </header>
 
@@ -141,14 +141,14 @@ button {
   <div class="actions">
     <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
     <button class="secondary" id="post" type="button" disabled>Post X</button>
-    <button class="toggle" id="extra" type="button">
-      <div class="switch"><i></i></div>
-      <span>Extra hashtags Off</span>
+    <button class="toggle" id="extra" type="button" aria-pressed="false">
+      <span class="switch"><i></i></span>
+      <span id="extraLabel">Off: keyword + main hashtag</span>
     </button>
   </div>
-
-  <div class="toast" id="toast"></div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <script>
 const LIMIT = 280;
@@ -228,6 +228,7 @@ let order = pool.map((_, i) => i);
 let cursor = 0;
 let copied = 0;
 let current = "";
+let lastBody = "";
 let extraOn = false;
 
 const countEl = document.getElementById("count");
@@ -236,6 +237,7 @@ const preview = document.getElementById("preview");
 const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
 const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
 
 poolEl.textContent = "Pool: " + pool.length + " comments";
 
@@ -267,14 +269,27 @@ function build(body) {
 
 function refreshExtra() {
   extraBtn.classList.toggle("on", extraOn);
-  extraBtn.querySelector("span").textContent = extraOn ? "Extra hashtags On" : "Extra hashtags Off";
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #PerthSanta #DOMIIA"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  if (current.length > LIMIT) {
+    lastBody = "";
+    current = "";
+    preview.textContent = "Your comment will appear here.";
+    preview.classList.add("empty");
+    postBtn.disabled = true;
+    return;
+  }
+  preview.textContent = current;
 }
 
 async function generate() {
   const tail = suffix();
   const room = LIMIT - tail.length;
   let body = "";
-  let found = false;
   for (let n = 0; n < pool.length; n++) {
     if (cursor >= order.length) {
       shuffle(order);
@@ -283,21 +298,21 @@ async function generate() {
     const next = pool[order[cursor++]];
     if (next.length <= room) {
       body = next;
-      found = true;
       break;
     }
   }
-  if (!found) {
+  if (!body) {
     showToast("No comment fits.");
     return;
   }
+  lastBody = body;
   current = build(body);
   preview.textContent = current;
   preview.classList.remove("empty");
   postBtn.disabled = false;
   try {
     await navigator.clipboard.writeText(current);
-    copied++;
+    copied += 1;
     countEl.textContent = "Copied: " + copied + " comments";
     showToast("Copied");
   } catch {
@@ -307,22 +322,22 @@ async function generate() {
 
 document.getElementById("generate").addEventListener("click", generate);
 
-postBtn.addEventListener("click", async () => {
-  if (!current) return;
-  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
-});
-
 extraBtn.addEventListener("click", () => {
   extraOn = !extraOn;
   refreshExtra();
-  if (current) generate(); // refresh current if any
 });
 
-document.addEventListener("keydown", (e) => {
-  if (e.code === "Space" && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
-    e.preventDefault();
-    generate();
-  }
+postBtn.addEventListener("click", () => {
+  if (!current || current.length > LIMIT) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
+  event.preventDefault();
+  generate();
 });
 </script>
 </body>
