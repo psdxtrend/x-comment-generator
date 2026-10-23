@@ -339,7 +339,7 @@ async function generate() {
   }
 }
 
-poolEl.textContent = "Pool: " + pool.length + " comments (≤280)";
+poolEl.textContent = "Pool: " + pool.length + " comments";
 document.getElementById("generate").addEventListener("click", generate);
 extraBtn.addEventListener("click", () => {
   extraOn = !extraOn;
