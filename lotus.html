@@ -35,55 +35,11 @@
     color: #3e4a41;
     font-size: 14px;
   }
-  .options {
-    margin: 20px 0 12px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-size: 14px;
-  }
-  /* Toggle Switch */
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 46px;
-    height: 24px;
-  }
-  .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-  }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
-    transition: .25s;
-    border-radius: 24px;
-  }
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 18px;
-    width: 18px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .25s;
-    border-radius: 50%;
-  }
-  input:checked + .slider {
-    background-color: var(--accent);
-  }
-  input:checked + .slider:before {
-    transform: translateX(22px);
-  }
   .stats {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    margin: 18px 0 16px;
+    margin: 22px 0 16px;
     font-size: 15px;
   }
   .count { font-weight: 600; }
@@ -98,7 +54,7 @@
     font-size: 15px;
   }
   .preview.empty { color: var(--muted); }
-  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
   button {
     appearance: none;
     border: 0;
@@ -117,6 +73,40 @@
   }
   .secondary:hover { background: #e7eee8; }
   .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  .switch {
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: #d5ccc6;
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.2s ease;
+  }
+  .switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s ease;
+  }
+  .toggle.on .switch { background: var(--accent); }
+  .toggle.on .switch i { transform: translateX(16px); }
+  .toggle span { font-size: 13px; }
   .toast {
     position: fixed;
     left: 50%;
@@ -138,16 +128,8 @@
     <header>
       <h1>X Comment Generator</h1>
       <p class="sub">English only. Short comments.</p>
-      <div class="notice">Press Space to Generate and Copy. Trend start 11:30. Do not use the keyword or hashtag before then.</div>
+      <div class="notice">Press Generate &amp; Copy to get comment. Trend starts 11:30. Do not use keyword or hashtag before then.</div>
     </header>
-
-    <div class="options">
-      <label class="switch">
-        <input type="checkbox" id="extraTags" checked>
-        <span class="slider"></span>
-      </label>
-      <span>Hashtag phụ (#PerthTanapon)</span>
-    </div>
 
     <div class="stats">
       <div class="count" id="count">Copied: 0 comments</div>
@@ -157,11 +139,17 @@
     <div class="actions">
       <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
       <button class="secondary" id="post" type="button" disabled>Space</button>
+      <button class="toggle" id="extra" type="button" aria-pressed="false">
+        <span class="switch"><i></i></span>
+        <span id="extraLabel">Off: keyword + main hashtag</span>
+      </button>
     </div>
   </div>
   <div class="toast" id="toast"></div>
 
 <script>
+const LIMIT = 280;
+
 const openings = [
   "Perth is on Lotus Live right now.",
   "Lotus Live with Perth is running smoothly.",
@@ -182,7 +170,12 @@ const openings = [
   "Perth is visible on the Lotus App live.",
   "Lotus Live is underway with Perth.",
   "Perth takes the live slot for Lotus today.",
-  "The Lotus stream includes Perth this round."
+  "The Lotus stream includes Perth this round.",
+  "Perth is live on the Lotus App right now.",
+  "Lotus shopping live features Perth at this hour.",
+  "Perth stays on the Lotus Live for the current slot.",
+  "The Lotus stream has Perth on air.",
+  "Perth appears again on today’s Lotus Live."
 ];
 
 const middles = [
@@ -200,7 +193,12 @@ const middles = [
   "Things are running in order.",
   "The live maintains its structure.",
   "It stays on track.",
-  "The session is holding steady."
+  "The session is holding steady.",
+  "The stream remains calm and clear.",
+  "Nothing feels rushed on the live.",
+  "The live keeps a simple, clean pace.",
+  "Viewers can follow without difficulty.",
+  "The session moves forward smoothly."
 ];
 
 const closers = [
@@ -218,13 +216,32 @@ const closers = [
   "It continues without pause.",
   "The live remains open.",
   "People are still tuned in.",
-  "The stream is active now."
+  "The stream is active now.",
+  "The live is still running.",
+  "Fans are still watching.",
+  "The stream has not finished.",
+  "It is still on air.",
+  "The session remains live."
 ];
 
+function getSuffix(extra) {
+  const tags = extra
+    ? "#LotussAppXPerth\n#PerthTanapon"
+    : "#LotussAppXPerth";
+  return "\n\nPERTH LOTUSS LIVE SHOP\n\n" + tags;
+}
+
 const pool = [];
+const maxSuffixLen = getSuffix(true).length;
+
 openings.forEach(o => {
   middles.forEach(m => {
-    closers.forEach(c => pool.push(o + " " + m + " " + c));
+    closers.forEach(c => {
+      const body = o + " " + m + " " + c;
+      if (body.length + maxSuffixLen <= LIMIT) {
+        pool.push(body);
+      }
+    });
   });
 });
 
@@ -232,13 +249,16 @@ let order = pool.map((_, i) => i);
 let cursor = 0;
 let copied = 0;
 let current = "";
+let lastBody = "";
+let extraOn = false;
 
 const countEl = document.getElementById("count");
 const poolEl = document.getElementById("pool");
 const preview = document.getElementById("preview");
 const postBtn = document.getElementById("post");
 const toast = document.getElementById("toast");
-const extraTags = document.getElementById("extraTags");
+const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
 
 poolEl.textContent = "Pool: " + pool.length + " comments";
 
@@ -257,20 +277,55 @@ function showToast(text) {
   showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
 }
 
+function suffix() {
+  return getSuffix(extraOn);
+}
+
 function build(body) {
-  let text = body + "\n\nPERTH LOTUSS LIVE SHOP\n\n#LotussAppXPerth";
-  if (extraTags.checked) {
-    text += "\n#PerthTanapon";
+  return body + suffix();
+}
+
+function refreshExtra() {
+  extraBtn.classList.toggle("on", extraOn);
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #PerthTanapon"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  if (current.length > LIMIT) {
+    lastBody = "";
+    current = "";
+    preview.textContent = "Your comment will appear here.";
+    preview.classList.add("empty");
+    postBtn.disabled = true;
+    return;
   }
-  return text;
+  preview.textContent = current;
+  preview.classList.remove("empty");
 }
 
 async function generate() {
-  if (cursor >= order.length) {
-    shuffle(order);
-    cursor = 0;
+  const tail = suffix();
+  const room = LIMIT - tail.length;
+  let body = "";
+  for (let n = 0; n < pool.length; n++) {
+    if (cursor >= order.length) {
+      shuffle(order);
+      cursor = 0;
+    }
+    const next = pool[order[cursor++]];
+    if (next.length <= room) {
+      body = next;
+      break;
+    }
   }
-  current = build(pool[order[cursor++]]);
+  if (!body) {
+    showToast("No comment fits.");
+    return;
+  }
+  lastBody = body;
+  current = build(body);
   preview.textContent = current;
   preview.classList.remove("empty");
   postBtn.disabled = false;
@@ -285,16 +340,18 @@ async function generate() {
 }
 
 document.getElementById("generate").addEventListener("click", generate);
-postBtn.addEventListener("click", async () => {
-  await generate();
-  if (!current) return;
+extraBtn.addEventListener("click", () => {
+  extraOn = !extraOn;
+  refreshExtra();
+});
+postBtn.addEventListener("click", () => {
+  if (!current || current.length > LIMIT) return;
   window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
 });
-
 document.addEventListener("keydown", (event) => {
   if (event.code !== "Space") return;
   const tag = document.activeElement && document.activeElement.tagName;
-  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
   event.preventDefault();
   generate();
 });
