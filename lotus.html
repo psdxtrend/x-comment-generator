@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · Perth x Lotus Live</title>
+<style>
+  :root {
+    --bg: #f4f7f3;
+    --paper: #fffdfb;
+    --ink: #243028;
+    --muted: #6d776f;
+    --line: #dce6dc;
+    --accent: #2f6b45;
+    --accent-dark: #245538;
+    --gold: #c4a574;
+    --chip: #eaf1eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #3e4a41;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--accent); color: #fff; }
+  .primary:hover { background: var(--accent-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .secondary:hover { background: #e7eee8; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">Perth x Lotus Live · Praise + mild brand mention</p>
+      <div class="notice">Press Space to Generate and Copy · PERTH LOTUSS LIVE SHOP · #LotussAppXPerth</div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Space</button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+<script>
+const openings = [
+  "So happy to see Perth on Lotus Live today!",
+  "Perth looks amazing hosting the Lotus live right now.",
+  "Finally getting to see Perth on Lotus Live, so excited!",
+  "Perth is killing it on this Lotus stream.",
+  "The Lotus live feels so much better with Perth here.",
+  "Can't stop smiling seeing Perth on Lotus Live.",
+  "Perth is glowing on the Lotus screen today.",
+  "This Lotus live just got 10 times better because of Perth.",
+  "Really happy the Lotus job is going so smoothly with Perth.",
+  "Perth is making the whole Lotus live so enjoyable.",
+  "Fans are going crazy seeing Perth on Lotus Live.",
+  "Perth looks so handsome and natural on the Lotus live.",
+  "So proud of how smooth this Lotus live is going with Perth.",
+  "Seeing Perth live on Lotus always makes the day better.",
+  "Perth is doing such a great job on this Lotus stream.",
+  "The energy on Lotus Live is so high thanks to Perth.",
+  "Perth is pure happiness on this Lotus live right now.",
+  "Everything is flowing so well with Perth on Lotus Live.",
+  "So excited to watch Perth on Lotus Live today!",
+  "Perth is looking extra good while hosting for Lotus.",
+  "This is exactly the kind of Lotus live we love from Perth.",
+  "Perth is carrying the Lotus live so smoothly.",
+  "Fans are screaming happy seeing Perth on Lotus right now.",
+  "Perth is absolute charm on this Lotus Live.",
+  "Really loving how natural and fun Perth is on the Lotus live."
+];
+
+const middles = [
+  "He looks so comfortable and confident.",
+  "His smile is lighting up the whole stream.",
+  "Everything is running so smoothly with Lotus.",
+  "The vibe is warm and full of energy.",
+  "He makes the Lotus live look easy.",
+  "The live feels lively and fun.",
+  "His presence makes the whole Lotus stream special.",
+  "Fans are loving every second of it.",
+  "He is handling the Lotus live so well.",
+  "The atmosphere is pure excitement.",
+  "He looks happy and it shows.",
+  "The flow of the Lotus live is perfect.",
+  "Everyone is enjoying the moment with him.",
+  "He brings such positive energy to Lotus.",
+  "The live keeps getting better and better."
+];
+
+const closers = [
+  "So proud of him!",
+  "Loving this Lotus live so much.",
+  "Hope he keeps this energy.",
+  "Fans are fully supporting!",
+  "This Lotus live is pure joy.",
+  "Can't get enough of him.",
+  "Really happy for this moment.",
+  "Perth is doing amazing with Lotus!",
+  "The support is strong today.",
+  "Keep shining, Perth!",
+  "This is what we waited for.",
+  "So glad the Lotus job is going well.",
+  "Excited for every minute of it.",
+  "Perth never disappoints!",
+  "Full support from all fans!"
+];
+
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+
+poolEl.textContent = "Pool: " + pool.length + " comments";
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = list[i];
+    list[i] = list[j];
+    list[j] = tmp;
+  }
+}
+shuffle(order);
+
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+function build(body) {
+  return body + "\n\nPERTH LOTUSS LIVE SHOP\n\n#LotussAppXPerth\n#PerthTanapon";
+}
+
+async function generate() {
+  if (cursor >= order.length) {
+    shuffle(order);
+    cursor = 0;
+  }
+  current = build(pool[order[cursor++]]);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+
+document.getElementById("generate").addEventListener("click", generate);
+postBtn.addEventListener("click", async () => {
+  await generate();
+  if (!current) return;
+  window.open("https://x.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA") return;
+  event.preventDefault();
+  generate();
+});
+</script>
+</body>
+</html>
