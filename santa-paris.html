@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · Santa x The A Festival Paris</title>
+<style>
+  :root {
+    --bg: #f2f6f6;
+    --paper: #fffdfb;
+    --ink: #1e2a2c;
+    --muted: #6a7678;
+    --line: #d7e3e4;
+    --clinic: #2c5d66;
+    --clinic-dark: #234a52;
+    --gold: #b7a08a;
+    --chip: #e8f0f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #3d4a4c;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--clinic); color: #fff; }
+  .primary:hover { background: var(--clinic-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .secondary:hover { background: #e5eeee; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  .switch {
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: #c9d5d6;
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.2s ease;
+  }
+  .switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s ease;
+  }
+  .toggle.on .switch { background: var(--clinic); }
+  .toggle.on .switch i { transform: translateX(16px); }
+  .toggle span { font-size: 13px; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">Santa · JASP.ER · The A Festival 2026 · Paris</p>
+      <div class="notice">Press Generate &amp; Copy to get comment. Focus on Santa. Trend keyword + hashtag after designated time only.</div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="toggle" id="extra" type="button" aria-pressed="false">
+        <span class="switch"><i></i></span>
+        <span id="extraLabel">Off: keyword + main hashtag</span>
+      </button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+const LIMIT = 280;
+
+const openings = [
+  "Santa steps onto the Paris stage and the whole arena lights up instantly.",
+  "The second Santa appears at The A Festival the energy in Paris explodes.",
+  "Fans have been waiting all day and Santa’s entrance makes every second worth it.",
+  "Santa walks out with that soft yet powerful presence and Paris goes wild.",
+  "The A Festival stage feels different the moment Santa takes his place.",
+  "Santa’s smile hits the crowd before the first beat even drops.",
+  "Paris Event Center turns electric the second Santa is on stage.",
+  "Every fan camera locks onto Santa the moment the lights hit him.",
+  "Santa looks so sharp and glowing under the Paris festival lights.",
+  "The whole JASP.ER set already feels special because Santa is shining.",
+  "Santa moves across the stage and the Paris crowd cannot look away.",
+  "That first wave from Santa and the arena screams back even louder.",
+  "Santa brings pure warmth and fire at the same time tonight in Paris.",
+  "Fans have been holding their breath and Santa finally delivers the moment.",
+  "The A Festival Paris just got its softest and brightest highlight — Santa.",
+  "Santa’s presence alone turns the stage into pure excitement.",
+  "From the first second Santa owns the Paris night with quiet confidence.",
+  "The crowd erupts the moment Santa’s face appears on the big screen.",
+  "Santa looks completely in his element under the European lights.",
+  "Paris gets to see the version of Santa fans have been dreaming about.",
+  "Santa steps forward and the whole energy of The A Festival shifts.",
+  "That outfit and that smile under Paris lights hit different tonight.",
+  "Santa makes the Paris stage feel intimate even in a huge arena.",
+  "Fans are already losing it just watching Santa take his position.",
+  "The A Festival night belongs to Santa the second he appears."
+];
+
+const middles = [
+  "His stage presence is clean, soft, and full of quiet power.",
+  "Every move feels effortless yet completely magnetic.",
+  "The smile, the eye contact, the whole aura just hits different.",
+  "He stays playful and sharp at the same time while the crowd stays locked on him.",
+  "Santa’s energy lifts the entire JASP.ER performance higher.",
+  "The way he holds the stage makes every fan feel closer.",
+  "Outfit, presence, and timing are all in perfect sync tonight.",
+  "He looks comfortable, glowing, and completely in control.",
+  "Fans catch every soft gesture and the cheers never drop.",
+  "Santa keeps the connection strong even from the big Paris stage.",
+  "His parts feel personal and powerful at the same time.",
+  "The performance energy stays high every time the camera finds him.",
+  "Santa makes the whole set feel warmer and more alive.",
+  "Nothing feels forced — he just lights up the moment naturally.",
+  "The Paris crowd gets pure Santa charm mixed with real stage fire.",
+  "He matches the group energy then raises it even higher.",
+  "Every angle already looks like a favorite fan moment.",
+  "Santa stays soft yet delivers with full confidence.",
+  "The whole arena feels the difference when he takes the center.",
+  "His presence turns a big festival stage into something intimate.",
+  "Fans keep replaying every second he is in frame.",
+  "Santa’s performance tonight is pure visual and emotional win.",
+  "He moves lightly while the energy stays nonstop.",
+  "The stage lights love him and the crowd loves him more.",
+  "Santa makes the Paris night feel special for every fan watching."
+];
+
+const closers = [
+  "Proud of Santa every single time he steps on stage.",
+  "Paris just witnessed another beautiful Santa moment.",
+  "Fans leave with the same soft smile he gave them.",
+  "He owns the night without even trying hard.",
+  "Counting down already for the next chance to see him.",
+  "Hoping this is only the beginning of more Europe stages.",
+  "Santa turns The A Festival into pure memory for so many fans.",
+  "The energy stays high long after the last note.",
+  "Another night where Santa quietly steals everything.",
+  "Can’t wait to see this glowing version of him again.",
+  "Paris got lucky tonight — Santa was here and shining.",
+  "Fans already replaying every soft and strong second.",
+  "Hoping JASP.ER and Santa get to return to Europe soon.",
+  "This performance will stay in fan hearts for a long time.",
+  "Santa makes the whole night feel complete.",
+  "Proud and emotional watching him shine so far from home.",
+  "The Paris stage suits him perfectly.",
+  "Already missing the moment and hoping for a next time.",
+  "Santa keeps the spark. The festival keeps the lights.",
+  "One more unforgettable Santa night in the books."
+];
+
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+let lastBody = "";
+let extraOn = false;
+
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+}
+shuffle(order);
+
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+function suffix() {
+  const tags = extraOn
+    ? "#TheAFestivalxJASPER\n#Santapp"
+    : "#TheAFestivalxJASPER";
+  return "\n\nJASPER BONJOUR PARIS\n\n" + tags;
+}
+
+function build(body) {
+  return body + suffix();
+}
+
+function refreshExtra() {
+  extraBtn.classList.toggle("on", extraOn);
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #Santapp"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  if (current.length > LIMIT) {
+    lastBody = "";
+    current = "";
+    preview.textContent = "Your comment will appear here.";
+    preview.classList.add("empty");
+    postBtn.disabled = true;
+    return;
+  }
+  preview.textContent = current;
+  preview.classList.remove("empty");
+}
+
+async function generate() {
+  const tail = suffix();
+  const room = LIMIT - tail.length;
+  let body = "";
+  for (let n = 0; n < pool.length; n++) {
+    if (cursor >= order.length) {
+      shuffle(order);
+      cursor = 0;
+    }
+    const next = pool[order[cursor++]];
+    if (next.length <= room) {
+      body = next;
+      break;
+    }
+  }
+  if (!body) {
+    showToast("No comment fits.");
+    return;
+  }
+  lastBody = body;
+  current = build(body);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+
+poolEl.textContent = "Pool: " + pool.length + " comments";
+document.getElementById("generate").addEventListener("click", generate);
+extraBtn.addEventListener("click", () => {
+  extraOn = !extraOn;
+  refreshExtra();
+});
+postBtn.addEventListener("click", () => {
+  if (!current || current.length > LIMIT) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
+  event.preventDefault();
+  generate();
+});
+</script>
+</body>
+</html>
