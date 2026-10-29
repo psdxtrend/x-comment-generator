@@ -144,7 +144,7 @@
       <button class="secondary" id="post" type="button" disabled>Post X</button>
       <button class="toggle" id="extra" type="button" aria-pressed="false">
         <span class="switch"><i></i></span>
-        <span id="extraLabel">Off: keyword + main hashtag</span>
+        <span id="extraLabel">Off: only 2 main hashtags</span>
       </button>
     </div>
   </div>
@@ -275,10 +275,11 @@ function showToast(text) {
 }
 
 function suffix() {
-  const tags = extraOn
-    ? "#ChupachupssourbeltxPS\n#ChupachupsxPS"
-    : "#ChupachupssourbeltxPS";
-  return "\n\nPERTHSANTA ENCHANTED CHUPS\n\n" + tags;
+  const mainTags = "#ChupachupssourbeltxPS\n#ChupachupsxPS";
+  const extraTags = extraOn
+    ? "\n#PerthSanta\n#เพิร์ธแซนต้า"
+    : "";
+  return "\n\nPERTHSANTA ENCHANTED CHUPS\n\n" + mainTags + extraTags;
 }
 
 function build(body) {
@@ -289,8 +290,8 @@ function refreshExtra() {
   extraBtn.classList.toggle("on", extraOn);
   extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
   extraLabel.textContent = extraOn
-    ? "On: + #ChupachupsxPS"
-    : "Off: keyword + main hashtag";
+    ? "On: + #PerthSanta #เพิร์ธแซนต้า"
+    : "Off: only 2 main hashtags";
   if (!lastBody) return;
   current = build(lastBody);
   if (current.length > LIMIT) {
