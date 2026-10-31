@@ -14,6 +14,7 @@
   .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
   button{background:#2c5d66;color:#fff;border:none;padding:10px 16px;border-radius:999px;cursor:pointer;font-size:.95rem}
   button.secondary{background:#fff;color:#1e2a2c;border:1px solid #d7e3e4}
+  button:active{opacity:.85}
   .toggle{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #d7e3e4;border-radius:999px;padding:7px 12px;cursor:pointer;user-select:none}
   .switch{width:40px;height:22px;background:#ccc;border-radius:999px;position:relative}
   .switch i{position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}
@@ -45,6 +46,7 @@
 
 <script>
 let extra = false, copied = 0;
+
 const openings = [
   "Perth and Santa look completely at ease at the Ralph’s Club New York Pop-Up.",
   "This Ralph Lauren moment with PerthSanta feels calm and well-matched.",
@@ -67,6 +69,7 @@ const openings = [
   "Watching them at SM Makati today feels rewarding.",
   "Their professionalism stands out in every collaboration."
 ];
+
 const middles = [
   "Their chemistry remains natural even in formal settings.",
   "The professionalism they show is consistent.",
@@ -89,6 +92,7 @@ const middles = [
   "The event benefits from their natural presence.",
   "They continue to open doors through consistency."
 ];
+
 const endings = [
   "Wishing them a smooth schedule today.",
   "Hope the day runs well for both of them.",
@@ -102,44 +106,74 @@ const endings = [
   "Support stays with them throughout."
 ];
 
-function r(a){return a[Math.floor(Math.random()*a.length)]}
-function body(){
-  const s = Math.floor(Math.random()*4);
-  if(s===0) return r(openings)+" "+r(middles);
-  if(s===1) return r(openings)+"\n"+r(middles);
-  if(s===2) return r(openings)+" "+r(middles)+" "+r(endings);
-  return r(openings)+"\n"+r(middles)+"\n"+r(endings);
+function r(a) {
+  return a[Math.floor(Math.random() * a.length)];
 }
-function build(){
+
+function body() {
+  const s = Math.floor(Math.random() * 4);
+  if (s === 0) return r(openings) + " " + r(middles);
+  if (s === 1) return r(openings) + "\n" + r(middles);
+  if (s === 2) return r(openings) + " " + r(middles) + " " + r(endings);
+  return r(openings) + "\n" + r(middles) + "\n" + r(endings);
+}
+
+function build() {
   let f = "\n\nPERTHSANTA RALPHS CLUB POPUP\n\n#RalphLaurenFragrancesXPerthSanta";
-  if(extra) f += "\n#PerthSanta #เพิร์ธแซนต้า";
-  return body()+f;
+  if (extra) f += "\n#PerthSanta #เพิร์ธแซนต้า";
+  return body() + f;
 }
-function toast(m){/* simple */ alert(m)} // thay bằng toast đẹp nếu muốn
 
-document.getElementById("extra").onclick = ()=>{
+document.getElementById("extra").onclick = () => {
   extra = !extra;
-  document.getElementById("extra").classList.toggle("on",extra);
-  document.getElementById("extraLabel").textContent = extra ? "On · + secondary tags" : "Off · keyword + main HS";
+  document.getElementById("extra").classList.toggle("on", extra);
+  document.getElementById("extraLabel").textContent = extra
+    ? "On · + secondary tags"
+    : "Off · keyword + main HS";
 };
 
-async function genCopy(){
+async function genCopy() {
   const c = build();
-  document.getElementById("preview").textContent = c;
-  document.getElementById("preview").classList.remove("empty");
-  try{
-    await navigator.clipboard.writeText(c);
+  const preview = document.getElementById("preview");
+  preview.textContent = c;
+  preview.classList.remove("empty");
+
+  try {
+    // Cách 1: Clipboard API hiện đại
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(c);
+    } else {
+      // Cách 2: fallback cho file:// hoặc HTTP
+      const ta = document.createElement("textarea");
+      ta.value = c;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
     copied++;
-    document.getElementById("count").textContent = "Copied: "+copied;
-  }catch(e){alert("Copy failed – select text manually")}
+    document.getElementById("count").textContent = "Copied: " + copied;
+  } catch (e) {
+    alert("Copy failed – select text manually");
+  }
 }
+
 document.getElementById("gen").onclick = genCopy;
-document.getElementById("genOnly").onclick = ()=>{
-  document.getElementById("preview").textContent = build();
-  document.getElementById("preview").classList.remove("empty");
+
+document.getElementById("genOnly").onclick = () => {
+  const preview = document.getElementById("preview");
+  preview.textContent = build();
+  preview.classList.remove("empty");
 };
-document.addEventListener("keydown",e=>{
-  if(e.code==="Space" && e.target===document.body){e.preventDefault();genCopy()}
+
+// Phím Space để generate + copy (chỉ khi không focus vào input)
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && e.target === document.body) {
+    e.preventDefault();
+    genCopy();
+  }
 });
 </script>
 </body>
