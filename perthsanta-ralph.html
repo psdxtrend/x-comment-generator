@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PerthSanta Ralph Lauren · Comment Generator</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:16px;background:#f6f1ec;color:#1e2a2c}
+  h1{font-size:1.35rem;margin:0 0 4px}
+  .sub{color:#6a7678;font-size:.95rem;margin-bottom:14px}
+  .notice{background:#eef5f5;border-left:4px solid #2c5d66;padding:10px 14px;font-size:.9rem;margin-bottom:18px}
+  .preview{background:#fffdfb;border:1px solid #d7e3e4;border-radius:10px;padding:16px;min-height:140px;white-space:pre-wrap;line-height:1.55}
+  .preview.empty{color:#6a7678}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+  button{background:#2c5d66;color:#fff;border:none;padding:10px 16px;border-radius:999px;cursor:pointer;font-size:.95rem}
+  button.secondary{background:#fff;color:#1e2a2c;border:1px solid #d7e3e4}
+  .toggle{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #d7e3e4;border-radius:999px;padding:7px 12px;cursor:pointer;user-select:none}
+  .switch{width:40px;height:22px;background:#ccc;border-radius:999px;position:relative}
+  .switch i{position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.2s}
+  .toggle.on .switch{background:#2c5d66}
+  .toggle.on .switch i{left:20px}
+  .stats{font-size:.9rem;color:#6a7678;margin-bottom:8px}
+</style>
+</head>
+<body>
+  <h1>X Comment Generator</h1>
+  <p class="sub">PerthSanta · Ralph’s Club New York Pop-Up · SM Makati</p>
+  <div class="notice">
+    Keyword: <b>PERTHSANTA RALPHS CLUB POPUP</b><br>
+    Main HS: <b>#RalphLaurenFragrancesXPerthSanta</b><br>
+    Press Generate &amp; Copy to get comment. Trend starts 17:00 BKK (05:00 PM). Do not use keyword or hashtag before then.
+  </div>
+
+  <div class="stats" id="count">Copied: 0</div>
+  <div class="preview empty" id="preview">Your comment will appear here.</div>
+
+  <div class="controls">
+    <button id="gen">Generate &amp; Copy</button>
+    <button class="secondary" id="genOnly">Generate only</button>
+    <div class="toggle" id="extra">
+      <span class="switch"><i></i></span>
+      <span id="extraLabel">Off · keyword + main HS</span>
+    </div>
+  </div>
+
+<script>
+let extra = false, copied = 0;
+const openings = [
+  "Perth and Santa look completely at ease at the Ralph’s Club New York Pop-Up.",
+  "This Ralph Lauren moment with PerthSanta feels calm and well-matched.",
+  "Seeing PerthSanta at SM Makati for Ralph’s Club New York feels right.",
+  "Perth and Santa carry the event with quiet confidence.",
+  "The Ralph Lauren collaboration suits them naturally.",
+  "PerthSanta bring a steady presence to the pop-up today.",
+  "Another clean appearance from Perth and Santa with Ralph Lauren.",
+  "They make the Ralph’s Club New York setting feel intentional.",
+  "PerthSanta handle this kind of brand moment with ease.",
+  "Ralph Lauren chose well with PerthSanta for this pop-up.",
+  "Perth and Santa look comfortable representing the fragrance today.",
+  "This stop in Manila shows how far the pairing has come.",
+  "PerthSanta keep delivering consistent, polished appearances.",
+  "The way they show up for Ralph Lauren feels genuine.",
+  "Perth and Santa fit the tone of Ralph’s Club New York perfectly.",
+  "A quiet but strong presence from PerthSanta at the venue.",
+  "They continue to represent every brand with care.",
+  "PerthSanta make the pop-up feel more personal.",
+  "Watching them at SM Makati today feels rewarding.",
+  "Their professionalism stands out in every collaboration."
+];
+const middles = [
+  "Their chemistry remains natural even in formal settings.",
+  "The professionalism they show is consistent.",
+  "Every collaboration seems to sit comfortably on them.",
+  "They bring a calm energy that works well with the brand.",
+  "It is clear why the brand continues to invite them.",
+  "Their presence adds a steady warmth to the event.",
+  "The pairing still feels fresh and well-balanced.",
+  "They handle these moments without forcing anything.",
+  "Support from the fandom stays quiet and steady today.",
+  "This kind of opportunity reflects the work they put in.",
+  "They look settled and focused throughout.",
+  "The connection between them still reads clearly.",
+  "Everything about their appearance feels measured.",
+  "Fans can see the growth in how they carry themselves.",
+  "The collaboration sits well with both of them.",
+  "They keep the tone elegant without overdoing it.",
+  "It is satisfying to watch them take these steps.",
+  "Their approach remains simple and effective.",
+  "The event benefits from their natural presence.",
+  "They continue to open doors through consistency."
+];
+const endings = [
+  "Wishing them a smooth schedule today.",
+  "Hope the day runs well for both of them.",
+  "Sending quiet support from everywhere.",
+  "Looking forward to the photos later.",
+  "May the rest of the event go smoothly.",
+  "Proud of the way they keep showing up.",
+  "Rooting for them as always.",
+  "Happy to see them take this opportunity.",
+  "Hoping everything stays on track today.",
+  "Support stays with them throughout."
+];
+
+function r(a){return a[Math.floor(Math.random()*a.length)]}
+function body(){
+  const s = Math.floor(Math.random()*4);
+  if(s===0) return r(openings)+" "+r(middles);
+  if(s===1) return r(openings)+"\n"+r(middles);
+  if(s===2) return r(openings)+" "+r(middles)+" "+r(endings);
+  return r(openings)+"\n"+r(middles)+"\n"+r(endings);
+}
+function build(){
+  let f = "\n\nPERTHSANTA RALPHS CLUB POPUP\n\n#RalphLaurenFragrancesXPerthSanta";
+  if(extra) f += "\n#PerthSanta #เพิร์ธแซนต้า";
+  return body()+f;
+}
+function toast(m){/* simple */ alert(m)} // thay bằng toast đẹp nếu muốn
+
+document.getElementById("extra").onclick = ()=>{
+  extra = !extra;
+  document.getElementById("extra").classList.toggle("on",extra);
+  document.getElementById("extraLabel").textContent = extra ? "On · + secondary tags" : "Off · keyword + main HS";
+};
+
+async function genCopy(){
+  const c = build();
+  document.getElementById("preview").textContent = c;
+  document.getElementById("preview").classList.remove("empty");
+  try{
+    await navigator.clipboard.writeText(c);
+    copied++;
+    document.getElementById("count").textContent = "Copied: "+copied;
+  }catch(e){alert("Copy failed – select text manually")}
+}
+document.getElementById("gen").onclick = genCopy;
+document.getElementById("genOnly").onclick = ()=>{
+  document.getElementById("preview").textContent = build();
+  document.getElementById("preview").classList.remove("empty");
+};
+document.addEventListener("keydown",e=>{
+  if(e.code==="Space" && e.target===document.body){e.preventDefault();genCopy()}
+});
+</script>
+</body>
+</html>
