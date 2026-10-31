@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PerthSanta Ralph Lauren · Comment Generator</title>
 <style>
   body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:16px;background:#f6f1ec;color:#1e2a2c}
@@ -14,6 +14,7 @@
   .controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
   button{background:#2c5d66;color:#fff;border:none;padding:10px 16px;border-radius:999px;cursor:pointer;font-size:.95rem}
   button.secondary{background:#fff;color:#1e2a2c;border:1px solid #d7e3e4}
+  button:disabled{opacity:.45;cursor:not-allowed}
   button:active{opacity:.85}
   .toggle{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #d7e3e4;border-radius:999px;padding:7px 12px;cursor:pointer;user-select:none}
   .switch{width:40px;height:22px;background:#ccc;border-radius:999px;position:relative}
@@ -27,15 +28,18 @@
   <h1>X Comment Generator</h1>
   <p class="sub">PerthSanta · Ralph’s Club New York Pop-Up · SM Makati</p>
   <div class="notice">
-    Press Generate &amp; Copy to get comment. Trend starts 17:00 BKK (05:00 PM). Do not use keyword or hashtag before then.
+    Press Generate &amp; Copy. Trend starts 17:00 BKK. Limit 280 characters with keyword + hashtags.
   </div>
 
-  <div class="stats" id="count">Copied: 0</div>
+  <div class="stats">
+    <span id="count">Copied: 0</span>
+    <span id="pool" style="float:right"></span>
+  </div>
   <div class="preview empty" id="preview">Your comment will appear here.</div>
 
   <div class="controls">
     <button id="gen">Generate &amp; Copy</button>
-    <button class="secondary" id="genOnly">Generate only</button>
+    <button class="secondary" id="post" disabled>Post X</button>
     <div class="toggle" id="extra">
       <span class="switch"><i></i></span>
       <span id="extraLabel">Off · keyword + main HS</span>
@@ -43,42 +47,65 @@
   </div>
 
 <script>
+const LIMIT = 280;
 let extra = false, copied = 0;
+let current = "";
+let lastBody = "";
 
 const openings = [
-  "Perth and Santa look completely at ease at the Ralph’s Club New York Pop-Up.",
-  "This Ralph Lauren moment with PerthSanta feels calm and well-matched.",
-  "Seeing PerthSanta at SM Makati for Ralph’s Club New York feels right.",
+  "Perth and Santa look at ease at Ralph’s Club New York.",
+  "This Ralph Lauren moment with PerthSanta feels calm.",
+  "Seeing PerthSanta at SM Makati for Ralph’s Club feels right.",
   "Perth and Santa carry the event with quiet confidence.",
   "The Ralph Lauren collaboration suits them naturally.",
-  "PerthSanta bring a steady presence to the pop-up today.",
-  "Another clean appearance from Perth and Santa with Ralph Lauren.",
-  "They make the Ralph’s Club New York setting feel intentional.",
-  "PerthSanta handle this kind of brand moment with ease.",
-  "Ralph Lauren chose well with PerthSanta for this pop-up.",
-  "Perth and Santa look comfortable representing the fragrance today.",
-  "This stop in Manila shows how far the pairing has come.",
-  "PerthSanta keep delivering consistent, polished appearances.",
+  "PerthSanta bring a steady presence to the pop-up.",
+  "Another clean look from Perth and Santa with Ralph Lauren.",
+  "They make the Ralph’s Club setting feel intentional.",
+  "PerthSanta handle this brand moment with ease.",
+  "Ralph Lauren chose well with PerthSanta for the pop-up.",
+  "Perth and Santa look comfortable with the fragrance.",
+  "This Manila stop shows how far the pairing has come.",
+  "PerthSanta keep delivering polished appearances.",
   "The way they show up for Ralph Lauren feels genuine.",
-  "Perth and Santa fit the tone of Ralph’s Club New York perfectly.",
-  "A quiet but strong presence from PerthSanta at the venue.",
-  "They continue to represent every brand with care.",
+  "Perth and Santa fit Ralph’s Club New York perfectly.",
+  "A quiet strong presence from PerthSanta at the venue.",
+  "They represent every brand with care.",
   "PerthSanta make the pop-up feel more personal.",
   "Watching them at SM Makati today feels rewarding.",
-  "Their professionalism stands out in every collaboration."
+  "Their professionalism stands out in every collaboration.",
+  "PerthSanta arrive at the Ralph Lauren pop-up looking sharp.",
+  "The pairing fits the New York Club vibe so well.",
+  "Fans are happy to see Perth and Santa with Ralph Lauren.",
+  "They keep the energy calm and elegant at the booth.",
+  "Ralph’s Club New York looks better with PerthSanta here.",
+  "Perth and Santa move through the pop-up with ease.",
+  "This event highlights how natural they look together.",
+  "The fragrance campaign suits their style perfectly.",
+  "SM Makati gets a polished moment with PerthSanta.",
+  "They continue to show up consistently for brands.",
+  "PerthSanta bring quiet charm to Ralph Lauren today.",
+  "The pop-up feels warmer with both of them present.",
+  "Another successful brand stop for the pairing.",
+  "They look settled and focused throughout the event.",
+  "Ralph Lauren and PerthSanta make a clean combination.",
+  "Fans appreciate the steady work they put in.",
+  "Perth and Santa handle formal settings comfortably.",
+  "The New York Club theme fits them without effort.",
+  "This appearance adds another solid moment to their year.",
+  "They keep delivering the same reliable presence."
 ];
 
 const middles = [
-  "Their chemistry remains natural even in formal settings.",
+  "Their chemistry stays natural even in formal settings.",
   "The professionalism they show is consistent.",
-  "Every collaboration seems to sit comfortably on them.",
-  "They bring a calm energy that works well with the brand.",
-  "It is clear why the brand continues to invite them.",
-  "Their presence adds a steady warmth to the event.",
+  "Every collaboration sits comfortably on them.",
+  "They bring calm energy that works with the brand.",
+  "It is clear why brands keep inviting them.",
+  "Their presence adds steady warmth to the event.",
   "The pairing still feels fresh and well-balanced.",
   "They handle these moments without forcing anything.",
-  "Support from the fandom stays quiet and steady today.",
-  "This kind of opportunity reflects the work they put in.",
+  "Support from the fandom stays quiet and steady.",
+  "This opportunity reflects the work they put in.",
   "They look settled and focused throughout.",
   "The connection between them still reads clearly.",
   "Everything about their appearance feels measured.",
@@ -88,7 +115,17 @@ const middles = [
   "It is satisfying to watch them take these steps.",
   "Their approach remains simple and effective.",
   "The event benefits from their natural presence.",
-  "They continue to open doors through consistency."
+  "They continue to open doors through consistency.",
+  "Nothing feels staged in the way they stand together.",
+  "The lights and setting frame them nicely.",
+  "They stay composed while still looking approachable.",
+  "This kind of campaign matches their current image.",
+  "Perth and Santa keep the moment light and clean.",
+  "Their outfits complement the Ralph Lauren palette.",
+  "The booth feels more complete with both of them.",
+  "They move with the same easy rhythm as always.",
+  "Fans notice how comfortable they look side by side.",
+  "The fragrance theme sits naturally on the pairing."
 ];
 
 const endings = [
@@ -101,49 +138,110 @@ const endings = [
   "Rooting for them as always.",
   "Happy to see them take this opportunity.",
   "Hoping everything stays on track today.",
-  "Support stays with them throughout."
+  "Support stays with them throughout.",
+  "Another good step for the pairing.",
+  "They continue to represent well.",
+  "The day already looks promising.",
+  "Fans are here for every moment.",
+  "Keep the good energy going."
 ];
 
 function r(a) {
   return a[Math.floor(Math.random() * a.length)];
 }
 
-function body() {
-  const s = Math.floor(Math.random() * 4);
-  if (s === 0) return r(openings) + " " + r(middles);
-  if (s === 1) return r(openings) + "\n" + r(middles);
-  if (s === 2) return r(openings) + " " + r(middles) + " " + r(endings);
-  return r(openings) + "\n" + r(middles) + "\n" + r(endings);
-}
-
-function build() {
+function suffix() {
   let f = "\n\nPERTHSANTA RALPHS CLUB POPUP\n\n#RalphLaurenFragrancesXPerthSanta";
   if (extra) f += "\n#PerthSanta #เพิร์ธแซนต้า";
-  return body() + f;
+  return f;
 }
 
-document.getElementById("extra").onclick = () => {
-  extra = !extra;
-  document.getElementById("extra").classList.toggle("on", extra);
+function build(b) {
+  return b + suffix();
+}
+
+// Build large pool of valid comments (approx 20k+)
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    endings.forEach(e => {
+      const body = o + " " + m + " " + e;
+      const fullOff = body + "\n\nPERTHSANTA RALPHS CLUB POPUP\n\n#RalphLaurenFragrancesXPerthSanta";
+      if (fullOff.length <= LIMIT) pool.push(body);
+    });
+    // also 2-sentence versions
+    const body2 = o + " " + m;
+    const fullOff2 = body2 + "\n\nPERTHSANTA RALPHS CLUB POPUP\n\n#RalphLaurenFragrancesXPerthSanta";
+    if (fullOff2.length <= LIMIT) pool.push(body2);
+  });
+});
+
+let order = pool.map((_, i) => i);
+let cursor = 0;
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+}
+shuffle(order);
+
+document.getElementById("pool").textContent = "Pool: " + pool.length + " comments";
+
+function refreshExtra() {
+  const el = document.getElementById("extra");
+  el.classList.toggle("on", extra);
   document.getElementById("extraLabel").textContent = extra
-    ? "On · + secondary tags"
+    ? "On · + #PerthSanta #เพิร์ธแซนต้า"
     : "Off · keyword + main HS";
-};
+
+  if (!lastBody) return;
+  current = build(lastBody);
+  const preview = document.getElementById("preview");
+  if (current.length > LIMIT) {
+    preview.textContent = "Too long with extra tags (" + current.length + "). Generate again.";
+    preview.classList.add("empty");
+    document.getElementById("post").disabled = true;
+    return;
+  }
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  document.getElementById("post").disabled = false;
+}
 
 async function genCopy() {
-  const c = build();
+  let body = "";
+  let attempts = 0;
+  while (attempts < pool.length) {
+    if (cursor >= order.length) {
+      shuffle(order);
+      cursor = 0;
+    }
+    body = pool[order[cursor++]];
+    current = build(body);
+    if (current.length <= LIMIT) break;
+    attempts++;
+  }
+  if (current.length > LIMIT) {
+    document.getElementById("preview").textContent = "No fitting comment found. Try again.";
+    document.getElementById("preview").classList.add("empty");
+    document.getElementById("post").disabled = true;
+    return;
+  }
+
+  lastBody = body;
   const preview = document.getElementById("preview");
-  preview.textContent = c;
+  preview.textContent = current;
   preview.classList.remove("empty");
+  document.getElementById("post").disabled = false;
 
   try {
-    // Cách 1: Clipboard API hiện đại
     if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(c);
+      await navigator.clipboard.writeText(current);
     } else {
-      // Cách 2: fallback cho file:// hoặc HTTP
       const ta = document.createElement("textarea");
-      ta.value = c;
+      ta.value = current;
       ta.style.position = "fixed";
       ta.style.left = "-9999px";
       document.body.appendChild(ta);
@@ -158,21 +256,17 @@ async function genCopy() {
   }
 }
 
-document.getElementById("gen").onclick = genCopy;
-
-document.getElementById("genOnly").onclick = () => {
-  const preview = document.getElementById("preview");
-  preview.textContent = build();
-  preview.classList.remove("empty");
+document.getElementById("extra").onclick = () => {
+  extra = !extra;
+  refreshExtra();
 };
 
-// Phím Space để generate + copy (chỉ khi không focus vào input)
-document.addEventListener("keydown", e => {
-  if (e.code === "Space" && e.target === document.body) {
-    e.preventDefault();
-    genCopy();
-  }
-});
+document.getElementById("gen").onclick = genCopy;
+
+document.getElementById("post").onclick = () => {
+  if (!current || current.length > LIMIT) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+};
 </script>
 </body>
 </html>
