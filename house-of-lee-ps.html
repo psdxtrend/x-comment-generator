@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · PerthSanta × HOUSE OF LEE</title>
+<style>
+  :root {
+    --bg: #f2f6f6;
+    --paper: #fffdfb;
+    --ink: #1e2a2c;
+    --muted: #6a7678;
+    --line: #d7e3e4;
+    --clinic: #2c5d66;
+    --clinic-dark: #234a52;
+    --gold: #b7a08a;
+    --chip: #e8f0f0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #3d4a4c;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--clinic); color: #fff; }
+  .primary:hover { background: var(--clinic-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .secondary:hover { background: #e5eeee; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  .switch {
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: #c9d5d6;
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.2s ease;
+  }
+  .switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s ease;
+  }
+  .toggle.on .switch { background: var(--clinic); }
+  .toggle.on .switch i { transform: translateX(16px); }
+  .toggle span { font-size: 13px; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">PerthSanta · HOUSE OF LEE · CentralwOrld Eden 1</p>
+      <div class="notice">Press Generate &amp; Copy to get comment. Trend starts 15:45 BKK (3:45 PM). Do not use keyword or hashtag before then.</div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="toggle" id="extra" type="button" aria-pressed="false">
+        <span class="switch"><i></i></span>
+        <span id="extraLabel">Off: keyword + main hashtag</span>
+      </button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+const LIMIT = 280;
+
+const openings = [
+  "PerthSanta just walked into HOUSE OF LEE and the whole Eden Zone lit up.",
+  "The second Perth and Santa appear at CentralwOrld, fans start screaming.",
+  "HOUSE OF LEE feels so much warmer the moment PerthSanta step in.",
+  "Perth and Santa arrive together and every camera locks on them instantly.",
+  "CentralwOrld Eden 1 turns electric the second PerthSanta show up.",
+  "Fans have been waiting all afternoon and PerthSanta finally deliver the moment.",
+  "Seeing PerthSanta at HOUSE OF LEE today feels so right.",
+  "PerthSanta own the Lee Jeans house from the first second.",
+  "The whole zone erupts the moment Perth and Santa walk out.",
+  "HOUSE OF LEE just got the coolest guests possible today.",
+  "PerthSanta’s presence makes the entire event feel brighter.",
+  "Lucky fans finally get to see Perth and Santa up close at Eden 1.",
+  "Perth and Santa step into the house and the energy jumps right away.",
+  "This afternoon at CentralwOrld belongs to PerthSanta.",
+  "PerthSanta look so sharp walking into HOUSE OF LEE.",
+  "The second they appear, live streams and phones all lock on them.",
+  "Fans are already shaking when PerthSanta come into view.",
+  "HOUSE OF LEE opens its doors and PerthSanta make it special.",
+  "Perth and Santa arrive side by side and the crowd loses it.",
+  "CentralwOrld feels alive the moment PerthSanta show up.",
+  "PerthSanta make Lee Jeans feel even cooler today.",
+  "Every angle finds Perth and Santa first at Eden 1.",
+  "The house lights up the second PerthSanta step inside.",
+  "Fans already know this is going to be a perfect PerthSanta moment.",
+  "PerthSanta walk in and steal the whole afternoon in seconds."
+];
+
+const middles = [
+  "Their outfits look clean, sharp, and perfectly on brand for Lee Jeans.",
+  "The chemistry between them still hits different every single time.",
+  "They look comfortable, glowing, and completely in their element.",
+  "Lee’s setup frames them perfectly without overpowering the moment.",
+  "The smile, the posture, the whole look just works so well together.",
+  "Fans catch every gesture and the energy stays nonstop.",
+  "They wave, laugh, and the whole area stays locked on them.",
+  "HOUSE OF LEE plus PerthSanta create such a cool visual.",
+  "Nothing feels forced — they just light up the space naturally.",
+  "The outfit details catch every flash and still look effortless.",
+  "They keep interacting lightly while the crowd stays glued to them.",
+  "Lee Jeans gets a full dose of pure PerthSanta charm today.",
+  "That sharp look mixed with their natural chemistry is deadly.",
+  "Cameras keep finding them even when they step slightly back.",
+  "They match the event energy then lift it even higher.",
+  "The whole Eden Zone feels better the longer they stay.",
+  "Every clip already looks like a favorite fan moment.",
+  "They stay playful and cool while the hype never drops.",
+  "Outfit, smile, and presence all in perfect sync today.",
+  "Lee chose well — PerthSanta make the whole stop feel special.",
+  "PerthSanta look so fresh and sharp in this Lee Jeans look.",
+  "The way they move together matches the house vibe perfectly.",
+  "Fans can’t stop praising how good they look today.",
+  "Their energy makes the whole program feel warmer.",
+  "They own every second they spend with HOUSE OF LEE.",
+  "PerthSanta interact with fans and the energy doubles.",
+  "Seeing them promote Lee Jeans just feels right.",
+  "The jeans look sits so well on both of them.",
+  "They keep the connection strong with everyone around.",
+  "Perth and Santa make the brand moment feel personal and fun."
+];
+
+const closers = [
+  "Today PerthSanta shine at HOUSE OF LEE.",
+  "CentralwOrld gets the coolest hour possible with them here.",
+  "They leave the same way they arrived: full of charm.",
+  "HOUSE OF LEE now has one clear PerthSanta moment.",
+  "Fans leave with the same smile they gave them.",
+  "The afternoon already feels complete with them there.",
+  "PerthSanta turn a brand event into pure memory.",
+  "Proud of our boys every single time they show up.",
+  "Another beautiful stage for PerthSanta today.",
+  "Live viewers get exactly the energy they came for.",
+  "They make Eden 1 unforgettable.",
+  "The energy stays high long after they move on.",
+  "PerthSanta own the afternoon without even trying hard.",
+  "Fans already replaying every sharp second.",
+  "This is the CentralwOrld afternoon everyone will remember.",
+  "Counting down every second until they appear again.",
+  "Lee Jeans plus PerthSanta is a pure win.",
+  "They keep the spark and the house keeps the lights.",
+  "Another day where PerthSanta quietly steal everything.",
+  "Can’t wait to see more of this glowing version of them.",
+  "PerthSanta make jeans look this cool.",
+  "The whole event feels better just because they are here.",
+  "Fans are so happy seeing PerthSanta with this job.",
+  "PerthSanta and HOUSE OF LEE is a perfect match today.",
+  "They just make everything look effortless.",
+  "Lucky fans are living their best life right now.",
+  "Their smile at the end is already the highlight.",
+  "This job fits PerthSanta so well.",
+  "Eden 1 will remember PerthSanta for a long time.",
+  "Proud to see PerthSanta doing this event."
+];
+
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+let lastBody = "";
+let extraOn = false;
+
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+}
+shuffle(order);
+
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+function suffix() {
+  const tags = extraOn
+    ? "#LEExPerthSanta\n#PerthSanta #เพิร์ธแซนต้า"
+    : "#LEExPerthSanta";
+  return "\n\nPERTHSANTA HOUSE OF LEE\n\n" + tags;
+}
+
+function build(body) {
+  return body + suffix();
+}
+
+function refreshExtra() {
+  extraBtn.classList.toggle("on", extraOn);
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #PerthSanta #เพิร์ธแซนต้า"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  if (current.length > LIMIT) {
+    lastBody = "";
+    current = "";
+    preview.textContent = "Your comment will appear here.";
+    preview.classList.add("empty");
+    postBtn.disabled = true;
+    return;
+  }
+  preview.textContent = current;
+  preview.classList.remove("empty");
+}
+
+async function generate() {
+  const tail = suffix();
+  const room = LIMIT - tail.length;
+  let body = "";
+  for (let n = 0; n < pool.length; n++) {
+    if (cursor >= order.length) {
+      shuffle(order);
+      cursor = 0;
+    }
+    const next = pool[order[cursor++]];
+    if (next.length <= room) {
+      body = next;
+      break;
+    }
+  }
+  if (!body) {
+    showToast("No comment fits.");
+    return;
+  }
+  lastBody = body;
+  current = build(body);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+
+poolEl.textContent = "Pool: " + pool.length + " comments";
+document.getElementById("generate").addEventListener("click", generate);
+extraBtn.addEventListener("click", () => {
+  extraOn = !extraOn;
+  refreshExtra();
+});
+postBtn.addEventListener("click", () => {
+  if (!current || current.length > LIMIT) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
+  event.preventDefault();
+  generate();
+});
+</script>
+</body>
+</html>
