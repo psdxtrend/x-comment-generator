@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · SANTA WITH JASP.ER · STARLYMPICS 2026</title>
+<style>
+:root {
+  --bg: #eef4fb;
+  --paper: #f7faff;
+  --ink: #0c1a2e;
+  --muted: #5a6d82;
+  --line: #c5d6ea;
+  --clinic: #1a6bb8;
+  --clinic-dark: #145a9c;
+  --gold: #3b8fd4;
+  --chip: #e0edf9;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+.sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+.notice {
+  margin-top: 14px;
+  padding: 10px 12px;
+  background: var(--chip);
+  border-left: 3px solid var(--gold);
+  color: #2d4a46;
+  font-size: 14px;
+}
+.stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 22px 0 16px;
+  font-size: 15px;
+}
+.count { font-weight: 600; }
+.pool { color: var(--muted); }
+.preview {
+  min-height: 220px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 16px;
+  white-space: pre-wrap;
+  line-height: 1.55;
+  font-size: 15px;
+}
+.preview.empty { color: var(--muted); }
+.actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+button {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px 10px;
+  min-height: 32px;
+}
+.primary { background: var(--clinic); color: #fff; }
+.primary:hover { background: var(--clinic-dark); }
+.secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--ink);
+}
+.secondary:hover { background: #d8ebe7; }
+.secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  padding: 0;
+  min-height: 32px;
+  cursor: pointer;
+}
+.switch {
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: #c9d5d6;
+  position: relative;
+  flex: 0 0 auto;
+  transition: background 0.2s ease;
+}
+.switch i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s ease;
+}
+.toggle.on .switch { background: var(--clinic); }
+.toggle.on .switch i { transform: translateX(16px); }
+.toggle span { font-size: 13px; }
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%) translateY(12px);
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.2s ease;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">SANTA WITH JASP.ER · GMMTV Starlympics 2026 · Shadow Eagle 🦅</p>
+      <div class="notice">
+        Press Generate &amp; Copy. Trend all day. Keyword: JASPER FLAREY RUNSHINE
+      </div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="toggle" id="extra" type="button" aria-pressed="false">
+        <span class="switch"><i></i></span>
+        <span id="extraLabel">Off: keyword + main hashtag</span>
+      </button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+const LIMIT = 280;
+
+const openings = [
+  "Santa is carrying the whole vibe at Starlympics 2026 today.",
+  "Just watching Santa move and the entire arena shifts with him.",
+  "Santa looks locked in and ready with Jasper and Flarey beside him.",
+  "The second Santa steps on the court for Shadow Eagle the energy changes.",
+  "Santa is giving that quiet intensity while Jasper and Flarey stay close.",
+  "Seeing Santa in the blue jersey with the group feels different this year.",
+  "Santa is moving like he already knows every step of the match.",
+  "Shadow Eagle gets sharper the moment Santa is fully in frame.",
+  "Santa keeps a calm face but the crowd can feel his focus.",
+  "Jasper and Flarey look stronger just standing next to Santa.",
+  "Santa is the one everyone keeps replaying after every play.",
+  "The blue side breathes differently when Santa is leading the rhythm.",
+  "Santa makes even the warm-up look intentional with Jasper and Flarey.",
+  "Fans are already zooming in on Santa more than anyone else today.",
+  "Santa’s presence alone lifts the whole Shadow Eagle lineup.",
+  "Watching Santa stay composed while the game speeds up is satisfying.",
+  "Santa and the group are moving as one unit for Shadow Eagle.",
+  "The arena noise rises every time Santa gets the ball.",
+  "Santa looks comfortable in the chaos with Jasper and Flarey around him.",
+  "This version of Santa at Starlympics feels more grounded and sharp.",
+  "Shadow Eagle has a clear center whenever Santa is on the floor.",
+  "Santa is reading the game while Jasper and Flarey cover the sides.",
+  "Even from the bench Santa’s eyes stay on every play.",
+  "Santa turns simple runs into moments people remember.",
+  "The blue team feels more complete with Santa setting the pace."
+];
+
+const middles = [
+  "His timing with Jasper and Flarey stays clean no matter how fast it gets.",
+  "Santa doesn’t rush — he waits for the right second then moves.",
+  "You can see the trust between Santa and the two of them in every pass.",
+  "Jasper and Flarey keep feeding him space and he uses it well.",
+  "Santa stays soft in expression but hard in effort the whole time.",
+  "The way he glances at the group before every play shows real connection.",
+  "He recovers quickly and still looks composed after every sprint.",
+  "Santa makes the blue jersey look natural on him today.",
+  "Fans notice how he adjusts his position without needing to shout.",
+  "Jasper and Flarey mirror his pace instead of fighting it.",
+  "Santa keeps his shoulders relaxed even when the score is close.",
+  "Every time the camera finds him the mood of the clip changes.",
+  "He plays with control rather than flash and it works.",
+  "Santa’s breathing stays steady while others start to push harder.",
+  "The group stays tight around him and the plays look smoother.",
+  "He doesn’t force the highlight — the highlight just finds him.",
+  "Santa’s focus never drops even during short breaks.",
+  "Jasper and Flarey look more confident after Santa talks to them.",
+  "He moves lightly but the impact of each step is clear.",
+  "Shadow Eagle’s shape holds better when Santa is the reference point.",
+  "Santa keeps the same expression whether they score or miss.",
+  "The crowd reacts first to him then to the rest of the play.",
+  "He gives small nods to Jasper and Flarey that the camera still catches.",
+  "Santa’s footwork stays precise even late in the match.",
+  "The three of them cover more ground when Santa sets the direction.",
+  "He stays present without needing to be the loudest one.",
+  "Santa’s calm makes Jasper and Flarey play freer.",
+  "Every angle already shows him tracking the ball earlier than others.",
+  "He resets the group with one look and they follow.",
+  "Santa is the quiet constant on the blue side today."
+];
+
+const closers = [
+  "Santa is the one we keep coming back to in every clip.",
+  "Shadow Eagle feels steadier with him on the floor.",
+  "Grateful for this version of Santa at Starlympics.",
+  "He makes the whole group look more settled.",
+  "Santa’s focus is the clearest thing on the blue side right now.",
+  "Jasper and Flarey look better because he is there.",
+  "This is the Santa we wanted to see today.",
+  "Keep watching him — the small details are the best part.",
+  "Santa turns regular plays into something worth saving.",
+  "The blue team has a center and it is him.",
+  "Proud of how calm he stays the entire time.",
+  "Santa is carrying the tone of Shadow Eagle today.",
+  "Jasper and Flarey stay close and it shows.",
+  "He doesn’t need to do the most to stand out.",
+  "Starlympics feels different when Santa is fully locked in.",
+  "We see the effort in the quiet moments too.",
+  "Santa makes the blue jersey look right on him.",
+  "The group moves cleaner with him setting the pace.",
+  "This is the kind of presence that stays in memory.",
+  "Santa is the reason some of these clips hit harder.",
+  "Shadow Eagle looks more complete with him in it.",
+  "He keeps the same energy from start to finish.",
+  "Jasper and Flarey trust him and it is visible.",
+  "Santa is the one the camera keeps finding on purpose.",
+  "Grateful for every second he is on the court today.",
+  "The blue side has a clear heartbeat and it is Santa.",
+  "He plays like he already knows the next step.",
+  "Santa makes the whole match easier to watch.",
+  "This is the Santa energy we needed for Shadow Eagle.",
+  "Proud of how he carries the group without forcing it."
+];
+
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+let lastBody = "";
+let extraOn = false;
+
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+}
+shuffle(order);
+
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+function suffix() {
+  const mainKey = "JASPER FLAREY RUNSHINE";
+  const mainHashtag = "#GMMTVStarlympics2026";
+
+  const tags = extraOn
+    ? mainHashtag + "\n#Santapp #FLAREY"
+    : mainHashtag;
+
+  return "\n\n" + mainKey + "\n\n" + tags;
+}
+
+function build(body) {
+  return body + suffix();
+}
+
+function refreshExtra() {
+  extraBtn.classList.toggle("on", extraOn);
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #Santapp #FLAREY"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  if (current.length > LIMIT) {
+    lastBody = "";
+    current = "";
+    preview.textContent = "Your comment will appear here.";
+    preview.classList.add("empty");
+    postBtn.disabled = true;
+    return;
+  }
+  preview.textContent = current;
+  preview.classList.remove("empty");
+}
+
+async function generate() {
+  const tail = suffix();
+  const room = LIMIT - tail.length;
+  let body = "";
+  for (let n = 0; n < pool.length; n++) {
+    if (cursor >= order.length) {
+      shuffle(order);
+      cursor = 0;
+    }
+    const next = pool[order[cursor++]];
+    if (next.length <= room) {
+      body = next;
+      break;
+    }
+  }
+  if (!body) {
+    showToast("No comment fits.");
+    return;
+  }
+  lastBody = body;
+  current = build(body);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+
+poolEl.textContent = "Pool: " + pool.length + " comments";
+document.getElementById("generate").addEventListener("click", generate);
+extraBtn.addEventListener("click", () => {
+  extraOn = !extraOn;
+  refreshExtra();
+});
+postBtn.addEventListener("click", () => {
+  if (!current || current.length > LIMIT) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
+  event.preventDefault();
+  generate();
+});
+</script>
+</body>
+</html>
