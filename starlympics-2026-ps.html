@@ -284,11 +284,12 @@ function showToast(text) {
 }
 
 function suffix() {
+  // Keyword & main hashtag 2026 – để trống, bổ sung sau
   const mainKey = "";           // ← điền keyword 2026 sau
   const mainHashtag = "";       // ← điền #hashtag 2026 sau
 
   const tags = extraOn
-    ? (mainHashtag ? mainHashtag + "\n" : "") + "#PerthSanta #เพิร์ธแซนต้า #DOMIIA"
+    ? (mainHashtag ? mainHashtag + "\n" : "") + "#PerthSanta #เพิร์ธแซนต้า\n#DOMIIA"
     : (mainHashtag || "");
 
   const keywordLine = mainKey ? mainKey + "\n\n" : "";
