@@ -126,13 +126,12 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>X Comment Generator</h1>
-      <p class="sub">PERTHSANTA · DOMIIA · GMMTV Starlympics 2026 · Shadow Eagle 🦅</p>
-      <div class="notice">
-        Press Generate &amp; Copy to get comment.<br>
-        Keyword &amp; hashtag 2026 currently empty — update later when announced.
-      </div>
-    </header>
+  <h1>X Comment Generator</h1>
+  <p class="sub">PerthSanta · DOMIIA · GMMTV Starlympics 2026 · Shadow Eagle 🦅</p>
+  <div class="notice">
+    Press Generate &amp; Copy to get comment. Trend starts 13:00 BKK (01:00 PM UTC+7). Do not use keyword or hashtag before then.
+  </div>
+   </header>
     <div class="stats">
       <div class="count" id="count">Copied: 0 comments</div>
       <div class="pool" id="pool"></div>
@@ -284,16 +283,14 @@ function showToast(text) {
 }
 
 function suffix() {
-  // Keyword & main hashtag 2026 – để trống, bổ sung sau
-  const mainKey = "";           // ← điền keyword 2026 sau
-  const mainHashtag = "";       // ← điền #hashtag 2026 sau
+  const mainKey = "PERTHSANTA DOMIIA FAMIGNITE";
+  const mainHashtag = "GMMTVStarlympics2026";
 
   const tags = extraOn
-    ? (mainHashtag ? mainHashtag + "\n" : "") + "#PerthSanta #เพิร์ธแซนต้า\n#DOMIIA"
-    : (mainHashtag || "");
+    ? mainHashtag + "\n#PerthSanta #เพิร์ธแซนต้า\n#DOMIIA"
+    : mainHashtag;
 
-  const keywordLine = mainKey ? mainKey + "\n\n" : "";
-  return "\n\n" + keywordLine + "PERTHSANTA DOMIIA WEWILLWIN\n\n" + tags;
+  return "\n\n" + mainKey + "\n\n" + tags;
 }
 
 function build(body) {
