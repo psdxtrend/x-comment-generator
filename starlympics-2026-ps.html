@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X Comment Generator · PerthSanta × DOMIIA · Starlympics 2026</title>
+<style>
+  :root {
+    --bg: #eef5f3;
+    --paper: #f8fcfb;
+    --ink: #0f2a28;
+    --muted: #5a7270;
+    --line: #c8ddd9;
+    --clinic: #1a6b5c;
+    --clinic-dark: #145248;
+    --gold: #3d9b8a;
+    --chip: #e0f0ed;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 32px 18px 56px; }
+  h1 { margin: 0 0 8px; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+  .sub { margin: 0; color: var(--muted); line-height: 1.5; font-size: 15px; }
+  .notice {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: var(--chip);
+    border-left: 3px solid var(--gold);
+    color: #2d4a46;
+    font-size: 14px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 22px 0 16px;
+    font-size: 15px;
+  }
+  .count { font-weight: 600; }
+  .pool { color: var(--muted); }
+  .preview {
+    min-height: 220px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 16px;
+    white-space: pre-wrap;
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  .preview.empty { color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; align-items: center; }
+  button {
+    appearance: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+  .primary { background: var(--clinic); color: #fff; }
+  .primary:hover { background: var(--clinic-dark); }
+  .secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .secondary:hover { background: #d8ebe7; }
+  .secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+    padding: 0;
+    min-height: 32px;
+    cursor: pointer;
+  }
+  .switch {
+    width: 36px;
+    height: 20px;
+    border-radius: 999px;
+    background: #c9d5d6;
+    position: relative;
+    flex: 0 0 auto;
+    transition: background 0.2s ease;
+  }
+  .switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.2s ease;
+  }
+  .toggle.on .switch { background: var(--clinic); }
+  .toggle.on .switch i { transform: translateX(16px); }
+  .toggle span { font-size: 13px; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>X Comment Generator</h1>
+      <p class="sub">PerthSanta · DOMIIA · GMMTV Starlympics 2026 · Shadow Eagle 🦅</p>
+      <div class="notice">
+        Press Generate &amp; Copy to get comment.<br>
+        Keyword &amp; hashtag 2026 currently empty — update later when announced.
+      </div>
+    </header>
+    <div class="stats">
+      <div class="count" id="count">Copied: 0 comments</div>
+      <div class="pool" id="pool"></div>
+    </div>
+    <div class="preview empty" id="preview">Your comment will appear here.</div>
+    <div class="actions">
+      <button class="primary" id="generate" type="button">Generate &amp; Copy</button>
+      <button class="secondary" id="post" type="button" disabled>Post X</button>
+      <button class="toggle" id="extra" type="button" aria-pressed="false">
+        <span class="switch"><i></i></span>
+        <span id="extraLabel">Off: keyword + main hashtag</span>
+      </button>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+<script>
+const LIMIT = 280;
+
+const openings = [
+  "PerthSanta and Domiia are lighting up Starlympics 2026 for Shadow Eagle.",
+  "Seeing Perth, Santa and Domiia together at Starlympics hits different.",
+  "PerthSanta Domiia bringing pure family power to the blue team today.",
+  "The whole arena feels stronger with Perth, Santa and Domiia on Shadow Eagle.",
+  "PerthSanta and their Domiia are giving everything for the team.",
+  "Watching PerthSanta Domiia compete and cheer together is pure joy.",
+  "Perth, Santa and Domiia make Shadow Eagle look unstoppable today.",
+  "Starlympics 2026 just got better with PerthSanta and Domiia here.",
+  "PerthSanta Domiia are the heart of the blue side right now.",
+  "Every moment with Perth, Santa and Domiia at Starlympics feels special.",
+  "PerthSanta and Domiia fighting hard and looking so good doing it.",
+  "The bond between Perth, Santa and Domiia shines so bright today.",
+  "Blue team is roaring thanks to PerthSanta and Domiia.",
+  "PerthSanta Domiia own every second of this Starlympics.",
+  "Fans can’t take their eyes off Perth, Santa and Domiia.",
+  "PerthSanta and Domiia are making this event unforgettable.",
+  "Shadow Eagle feels complete with Perth, Santa and Domiia.",
+  "The energy jumps the moment PerthSanta and Domiia appear.",
+  "PerthSanta Domiia turning Starlympics into pure emotion.",
+  "Proud of Perth, Santa and Domiia every single second today.",
+  "PerthSanta and Domiia keep the whole stadium smiling.",
+  "This is the PerthSanta Domiia energy we needed at Starlympics.",
+  "Blue side is louder because of Perth, Santa and Domiia.",
+  "PerthSanta Domiia are giving us the best moments of the day.",
+  "Nothing beats watching Perth, Santa and Domiia together like this."
+];
+
+const middles = [
+  "Their chemistry and support for each other make every play better.",
+  "You can feel the love and determination between the three of them.",
+  "They push each other, cheer each other and light up the whole arena.",
+  "The way they stay connected even in competition is so beautiful.",
+  "Fans keep screaming every time the camera finds the three of them.",
+  "They look focused, happy and completely in their element together.",
+  "Every goal, every run and every cheer feels stronger with all three.",
+  "The family energy they bring is unmatched on this stage.",
+  "They make the blue jersey look even better just by being together.",
+  "Nothing feels forced — just pure effort and pure love from all three.",
+  "The whole stadium reacts the second any of them moves.",
+  "Their bond turns a sports event into something much warmer.",
+  "You can see how much they want this for each other and the team.",
+  "Every highlight already features Perth, Santa and Domiia somehow.",
+  "They lift the entire Shadow Eagle side just by showing up together.",
+  "The support between the three of them never drops for a second.",
+  "Skill, speed and heart — all three of them are delivering today.",
+  "Even when tired they still find ways to encourage each other.",
+  "Fans are already saving every clip of the three of them.",
+  "They own the moment without even trying too hard.",
+  "The energy triples whenever Perth, Santa and Domiia are in frame.",
+  "This is what real team and family spirit looks like.",
+  "They make every second of Starlympics worth watching.",
+  "Blue hearts are beating faster because of these three.",
+  "The way they celebrate and support each other is pure magic.",
+  "PerthSanta Domiia keep the whole arena locked on them.",
+  "They turn competition into the warmest memory of the day.",
+  "You can feel how proud they are of one another.",
+  "Every play and every cheer hits different with all three present.",
+  "This is the PerthSanta Domiia package fans came for."
+];
+
+const closers = [
+  "Proud of PerthSanta and Domiia every single second.",
+  "Shadow Eagle is so lucky to have all three of them.",
+  "This is pure PerthSanta Domiia magic.",
+  "Keep fighting, keep shining — we are with all of you.",
+  "Blue team shines brighter because of Perth, Santa and Domiia.",
+  "Fans are living for every moment the three of them give.",
+  "PerthSanta Domiia making Starlympics unforgettable.",
+  "The whole arena feels their power together.",
+  "Another beautiful day watching Perth, Santa and Domiia.",
+  "They are the heart of Shadow Eagle today.",
+  "Loving every second of PerthSanta Domiia at Starlympics.",
+  "This family just makes everything better.",
+  "We see the effort and we love all three of you.",
+  "PerthSanta Domiia WE WILL WIN energy is strong.",
+  "Thank you for giving us these moments together.",
+  "Blue side never looked stronger with them.",
+  "Keep going — the whole fandom is behind all three.",
+  "They make us proud on and off the field.",
+  "Starlympics 2026 already belongs to PerthSanta Domiia in our hearts.",
+  "This is the energy we will remember forever.",
+  "Perth, Santa and Domiia own this stage today.",
+  "Fighting hard and looking good while doing it together.",
+  "The bond is real and the performance matches.",
+  "We will remember this Starlympics because of them.",
+  "Proud doesn’t even cover how we feel about all three.",
+  "PerthSanta Domiia turning sports into pure emotion.",
+  "Blue hearts beating for Perth, Santa and Domiia all day.",
+  "They are everything Shadow Eagle needed today.",
+  "Can’t stop smiling watching the three of them.",
+  "This is pure PerthSanta Domiia power."
+];
+
+const pool = [];
+openings.forEach(o => {
+  middles.forEach(m => {
+    closers.forEach(c => pool.push(o + " " + m + " " + c));
+  });
+});
+
+let order = pool.map((_, i) => i);
+let cursor = 0;
+let copied = 0;
+let current = "";
+let lastBody = "";
+let extraOn = false;
+
+const countEl = document.getElementById("count");
+const poolEl = document.getElementById("pool");
+const preview = document.getElementById("preview");
+const postBtn = document.getElementById("post");
+const toast = document.getElementById("toast");
+const extraBtn = document.getElementById("extra");
+const extraLabel = document.getElementById("extraLabel");
+
+function shuffle(list) {
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+}
+shuffle(order);
+
+function showToast(text) {
+  toast.textContent = text;
+  toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => toast.classList.remove("show"), 1400);
+}
+
+function suffix() {
+  const mainKey = "";           // ← điền keyword 2026 sau
+  const mainHashtag = "";       // ← điền #hashtag 2026 sau
+
+  const tags = extraOn
+    ? (mainHashtag ? mainHashtag + "\n" : "") + "#PerthSanta #เพิร์ธแซนต้า #DOMIIA"
+    : (mainHashtag || "");
+
+  const keywordLine = mainKey ? mainKey + "\n\n" : "";
+  return "\n\n" + keywordLine + "PERTHSANTA DOMIIA WEWILLWIN\n\n" + tags;
+}
+
+function build(body) {
+  return body + suffix();
+}
+
+function refreshExtra() {
+  extraBtn.classList.toggle("on", extraOn);
+  extraBtn.setAttribute("aria-pressed", extraOn ? "true" : "false");
+  extraLabel.textContent = extraOn
+    ? "On: + #PerthSanta #เพิร์ธแซนต้า #DOMIIA"
+    : "Off: keyword + main hashtag";
+  if (!lastBody) return;
+  current = build(lastBody);
+  if (current.length > LIMIT) {
+    lastBody = "";
+    current = "";
+    preview.textContent = "Your comment will appear here.";
+    preview.classList.add("empty");
+    postBtn.disabled = true;
+    return;
+  }
+  preview.textContent = current;
+  preview.classList.remove("empty");
+}
+
+async function generate() {
+  const tail = suffix();
+  const room = LIMIT - tail.length;
+  let body = "";
+  for (let n = 0; n < pool.length; n++) {
+    if (cursor >= order.length) {
+      shuffle(order);
+      cursor = 0;
+    }
+    const next = pool[order[cursor++]];
+    if (next.length <= room) {
+      body = next;
+      break;
+    }
+  }
+  if (!body) {
+    showToast("No comment fits.");
+    return;
+  }
+  lastBody = body;
+  current = build(body);
+  preview.textContent = current;
+  preview.classList.remove("empty");
+  postBtn.disabled = false;
+  try {
+    await navigator.clipboard.writeText(current);
+    copied += 1;
+    countEl.textContent = "Copied: " + copied + " comments";
+    showToast("Copied");
+  } catch (err) {
+    showToast("Copy failed. Select the text manually.");
+  }
+}
+
+poolEl.textContent = "Pool: " + pool.length + " comments";
+document.getElementById("generate").addEventListener("click", generate);
+extraBtn.addEventListener("click", () => {
+  extraOn = !extraOn;
+  refreshExtra();
+});
+postBtn.addEventListener("click", () => {
+  if (!current || current.length > LIMIT) return;
+  window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(current), "_blank", "noopener");
+});
+document.addEventListener("keydown", (event) => {
+  if (event.code !== "Space") return;
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "BUTTON") return;
+  event.preventDefault();
+  generate();
+});
+</script>
+</body>
+</html>
